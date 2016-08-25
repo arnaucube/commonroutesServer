@@ -1,0 +1,12 @@
+<ion-view view-title="Travels">
+  <ion-content>
+    <div class="list">
+        <a ng-repeat="travel in travels" class="item item-avatar" href="#/app/travels/{{travel.id}}">
+          <img ng-src="img/carimg/{{travel.icon}}.png">
+          <h2>{{travel.title}}</h2>
+          <p>{{travel.description}}</p>
+          <div class="badge badge-calm item-note">{{travel.owner}}</div>
+        </a>
+    </div>
+  </ion-content>
+</ion-view>

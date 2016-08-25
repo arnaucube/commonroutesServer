@@ -5,7 +5,7 @@
     Nodejs + Express + MongoDB
 
 **Frontend:**
-    Angularjs + Materializecss
+    Angularjs + Ionic + MaterialDesign
 
 
 ##Project Structure:
