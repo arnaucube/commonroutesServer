@@ -1,4 +1,4 @@
-#ComunalCar app
+#CollectiveCar app
 
 
 **Backend:**
@@ -10,7 +10,7 @@
 
 ##Project Structure:
 ```
-comunalcar/
+collectivecar/
 	server/
 		controllers/
 			userController.js
@@ -105,7 +105,7 @@ comunalcar/
 -generateddate (cuando el user genera el aviso)
 -seats (plazas de coche necesarias)
 
-**collectivizedCar**: (los coches/furgos comunales) --> quizás esto no hace falta, solo usar 'offeringCar' normal con un añadido para notificar que es un coche colectivizado
+**collectivizedCar**: (los coches/furgos colectivos) --> quizás esto no hace falta, solo usar 'offeringCar' normal con un añadido para notificar que es un coche colectivizado
 -owner (user q publica el coche)
 -title
 -seats (plazas de coche disponibles)
@@ -121,8 +121,8 @@ lo de poner o no un mapa, de entrada no destinaria esfuerzos en eso. Para la pri
 
 ####**RESOURCES to use**:
 
-    car icons [http://www.flaticon.com/packs/transportation-7](http://www.flaticon.com/packs/transportation-7)
+car icons [http://www.flaticon.com/packs/transportation-7](http://www.flaticon.com/packs/transportation-7)
 
-    css para la app: matterializeCSS [http://materializecss.com/](http://materializecss.com/)
+css para la app: matterializeCSS [http://materializecss.com/](http://materializecss.com/)
 
-    avatars users: [http://www.flaticon.com/packs/animal-icon-collection](http://www.flaticon.com/packs/animal-icon-collection)
+avatars users: [http://www.flaticon.com/packs/animal-icon-collection](http://www.flaticon.com/packs/animal-icon-collection)
