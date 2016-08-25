@@ -42,8 +42,8 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('TravelsCtrl', function($scope) {
-  $scope.travels = [
+.controller('TravelsCtrl', function($scope, $http) {
+  /*$scope.travels = [
     { id: 1, title: 'Travel1', description: "description for travel 1", owner: "user1", icon: "car" },
     { id: 2, title: 'Travel2', description: "description for travel 2", owner: "user2", icon: "station-wagon" },
     { id: 3, title: 'Travel3', description: "description for travel 3", owner: "user3", icon: "van" },
@@ -52,7 +52,20 @@ angular.module('starter.controllers', [])
     { id: 6, title: 'Travel6', description: "description for travel 6", owner: "user3", icon: "lorry" },
     { id: 7, title: 'Travel7', description: "description for travel 7", owner: "user1", icon: "sport-car" },
     { id: 8, title: 'Travel8', description: "description for travel 8", owner: "user2", icon: "jeep" }
-  ];
+];*/
+    $scope.travels="";
+    $http.get('http://localhost:3000/api/travels')
+    .success(function(data, status, headers,config){
+      console.log('data success');
+      console.log(data); // for browser console
+      $scope.travels = data; // for UI
+    })
+    .error(function(data, status, headers,config){
+      console.log('data error');
+    })
+    .then(function(result){
+      travels = result.data;
+  });
 })
 .controller('TravelCtrl', function($scope, $stateParams) {
     //$scope.travel=travels.get($stateParams.travelId);

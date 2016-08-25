@@ -58,7 +58,8 @@ exports.addTravel = function(req, res) {
 	    to:   req.body.to,
 	    date:   req.body.date,
 	    generateddate:   req.body.generateddate,
-		seats: req.body.seats
+		seats: req.body.seats,
+		icon: req.body.icon
 	});
 
 	travel.save(function(err, travel) {

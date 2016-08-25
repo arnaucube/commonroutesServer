@@ -10,6 +10,7 @@ var travelSchema = new Schema({
     to: { type: String },
     date: { type: Date },
     generateddate: { type: Date },
-    seats: { type: Number }
+    seats: { type: Number },
+    icon: { type: String }
 })
 module.exports = mongoose.model('travelModel', travelSchema);
