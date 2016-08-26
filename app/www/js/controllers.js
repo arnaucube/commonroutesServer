@@ -42,31 +42,83 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('TravelsCtrl', function($scope, $http) {
-  /*$scope.travels = [
-    { id: 1, title: 'Travel1', description: "description for travel 1", owner: "user1", icon: "car" },
-    { id: 2, title: 'Travel2', description: "description for travel 2", owner: "user2", icon: "station-wagon" },
-    { id: 3, title: 'Travel3', description: "description for travel 3", owner: "user3", icon: "van" },
-    { id: 4, title: 'Travel4', description: "description for travel 4", owner: "user1", icon: "station-wagon" },
-    { id: 5, title: 'Travel5', description: "description for travel 5", owner: "user2", icon: "minivan" },
-    { id: 6, title: 'Travel6', description: "description for travel 6", owner: "user3", icon: "lorry" },
-    { id: 7, title: 'Travel7', description: "description for travel 7", owner: "user1", icon: "sport-car" },
-    { id: 8, title: 'Travel8', description: "description for travel 8", owner: "user2", icon: "jeep" }
-];*/
+.controller('TravelsCtrl', function($scope, $http, $ionicModal, $timeout) {
     $scope.travels="";
     $http.get('http://localhost:3000/api/travels')
     .success(function(data, status, headers,config){
-      console.log('data success');
-      console.log(data); // for browser console
-      $scope.travels = data; // for UI
+        console.log('data success');
+        console.log(data); // for browser console
+        $scope.travels = data; // for UI
     })
     .error(function(data, status, headers,config){
-      console.log('data error');
+        console.log('data error');
     })
     .then(function(result){
-      travels = result.data;
+        travels = result.data;
+    });
+
+
+    $scope.newtravel={};
+
+  // Create the login modal that we will use later
+  $ionicModal.fromTemplateUrl('templates/newtravel.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal = modal;
   });
+  // Triggered in the login modal to close it
+  $scope.closeNewTravel = function() {
+    $scope.modal.hide();
+  };
+
+  // Open the login modal
+  $scope.showNewTravel = function() {
+    $scope.modal.show();
+  };
+  // Perform the login action when the user submits the login form
+  $scope.doNewTravel = function() {
+    console.log('Doing new travel', $scope.newtravel);
+    $scope.newtravel.icon="lorry";
+    $scope.newtravel.generateddate=$scope.newtravel.date;
+    $scope.newtravel.owner="user";
+    console.log($scope.newtravel);
+    $http({
+        url: 'http://localhost:3000/api/travels',
+        method: "POST",
+        data: $scope.newtravel
+    })
+    .then(function(response) {
+            // success
+            console.log("response: ");
+            console.log(response);
+            $scope.newtravel._id=response.data._id;
+            $scope.travels.push($scope.newtravel);
+    },
+    function(response) { // optional
+            // failed
+    });
+
+    // Simulate a login delay. Remove this and replace with your login
+    // code if using a login system
+    $timeout(function() {
+      $scope.closeNewTravel();
+    }, 1000);
+  };
 })
-.controller('TravelCtrl', function($scope, $stateParams) {
-    //$scope.travel=travels.get($stateParams.travelId);
+
+.controller('TravelCtrl', function($scope, $stateParams, $http) {
+    $scope.travel="";
+    console.log($stateParams.travelId);
+    $http.get('http://localhost:3000/api/travels/'+$stateParams.travelId)
+        .success(function(data, status, headers,config){
+            console.log('data success');
+            console.log(data); // for browser console
+            $scope.travel = data; // for UI
+        })
+        .error(function(data, status, headers,config){
+            console.log('data error');
+        })
+        .then(function(result){
+            travels = result.data;
+    });
 });

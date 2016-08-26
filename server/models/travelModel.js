@@ -11,6 +11,7 @@ var travelSchema = new Schema({
     date: { type: Date },
     generateddate: { type: Date },
     seats: { type: Number },
-    icon: { type: String }
+    icon: { type: String },
+    phone: { type: Number }
 })
 module.exports = mongoose.model('travelModel', travelSchema);

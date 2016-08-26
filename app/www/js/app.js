@@ -59,7 +59,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     })
 
-  .state('app.single', {
+  .state('app.travel', {
     url: '/travels/:travelId',
     views: {
       'menuContent': {

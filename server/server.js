@@ -71,6 +71,7 @@ apiRoutes.route('/travels')
 apiRoutes.route('/travels/:id')
 .get(travelCtrl.findById)
 
+/* OJU AQUÏ TREC la verificació de token temporalment, per fer les proves des de l'app
 // route middleware to verify a token
 apiRoutes.use(function(req, res, next) {
 
@@ -101,7 +102,7 @@ apiRoutes.use(function(req, res, next) {
     });
 
   }
-});
+});*/
 
 apiRoutes.route('/users/:id')
   .put(userCtrl.updateUser)

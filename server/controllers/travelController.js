@@ -59,7 +59,8 @@ exports.addTravel = function(req, res) {
 	    date:   req.body.date,
 	    generateddate:   req.body.generateddate,
 		seats: req.body.seats,
-		icon: req.body.icon
+		icon: req.body.icon,
+		phone: req.body.phone
 	});
 
 	travel.save(function(err, travel) {
