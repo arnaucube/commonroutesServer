@@ -44,19 +44,24 @@ angular.module('starter.controllers', [])
 
 .controller('TravelsCtrl', function($scope, $http, $ionicModal, $timeout) {
     $scope.travels="";
-    $http.get('http://localhost:3000/api/travels')
-    .success(function(data, status, headers,config){
-        console.log('data success');
-        console.log(data); // for browser console
-        $scope.travels = data; // for UI
-    })
-    .error(function(data, status, headers,config){
-        console.log('data error');
-    })
-    .then(function(result){
-        travels = result.data;
-    });
 
+
+    $scope.doRefresh = function() {
+        $http.get('http://localhost:3000/api/travels')
+        .success(function(data, status, headers,config){
+            console.log('data success');
+            console.log(data); // for browser console
+            $scope.travels = data; // for UI
+            $scope.$broadcast('scroll.refreshComplete');//refresher stop
+        })
+        .error(function(data, status, headers,config){
+            console.log('data error');
+            $scope.$broadcast('scroll.refreshComplete');//refresher stop
+        })
+        .then(function(result){
+            travels = result.data;
+        });
+    };
 
     $scope.newtravel={};
 
@@ -121,6 +126,37 @@ angular.module('starter.controllers', [])
     // code if using a login system
     $timeout(function() {
       $scope.closeNewOfferingTravel();
+    }, 1000);
+  };
+
+  $scope.doNewAskingTravel = function() {
+    console.log('Doing new travel', $scope.newtravel);
+    $scope.newtravel.icon="lorry";
+    $scope.newtravel.generateddate=$scope.newtravel.date;
+    $scope.newtravel.owner="user";
+
+    $scope.newtravel.modality="asking";
+    console.log($scope.newtravel);
+    $http({
+        url: 'http://localhost:3000/api/travels',
+        method: "POST",
+        data: $scope.newtravel
+    })
+    .then(function(response) {
+            // success
+            console.log("response: ");
+            console.log(response);
+            $scope.newtravel._id=response.data._id;
+            $scope.travels.push($scope.newtravel);
+    },
+    function(response) { // optional
+            // failed
+    });
+
+    // Simulate a login delay. Remove this and replace with your login
+    // code if using a login system
+    $timeout(function() {
+      $scope.closeNewAskingTravel();
     }, 1000);
   };
 })

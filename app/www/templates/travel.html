@@ -10,12 +10,16 @@
         <div class='o-float-right o-text-right'>
             <div class="">{{travel.date | date:"dd/MM HH:mm a"}}</div>
             <br>
-            <div class="royal" ng-show="travel.package">[periodic travel]</div>
-            <br>
-            <div class="o-mini-text" ng-show="travel.package">can carry package<img src="img/package.png" class="o-imgMenu" /></div>
+            <div class="o-mini-text" ng-show="travel.package">
+                <div ng-show="travel.modality=='offering'">can carry package <img src="img/package.png" class="o-imgMenu" /></div>
+                <div ng-show="travel.modality=='asking'">need to carry package <img src="img/package.png" class="o-imgMenu" /></div>
+            </div>
         </div>
         <p><img class='o-imgTitle' src="img/from-to.png" />{{travel.from}} - {{travel.to}}</p>
-        <p>nº car seats: {{trave.seats}}</p>
+        <p>
+            <div ng-show="travel.modality=='offering'">nº car seats: {{travel.seats}}</div>
+            <div ng-show="travel.modality=='asking'">nº people: {{travel.seats}}</div>
+        </p>
         <p class="o-bold">{{travel.description}}</p>
         <br>
         <p>
@@ -26,7 +30,8 @@
         </p>
 
         <p class='text-right'>
-          <a href="#" class="button button-calm o-pull-right">Ask to join</a>
+            <a ng-show="travel.modality=='offering'" href="#" class="button button-calm o-pull-right">Ask to join</a>
+            <a ng-show="travel.modality=='asking'" href="#" class="button button-calm o-pull-right">Offer car</a>
         </p>
     </div>
   </ion-content>
