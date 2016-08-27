@@ -13,3 +13,10 @@
 .o-float-right{
     float: right;
 }
+.o-text-right{
+    text-align: right;
+}
+.o-mini-text{
+    font-size: 12px;
+    display: inline-block;
+}

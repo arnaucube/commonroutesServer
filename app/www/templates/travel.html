@@ -1,18 +1,28 @@
 <ion-view view-title="Travel">
   <ion-content>
     <div class="item item-avatar">
-        <img ng-src="img/carimg/{{travel.icon}}.png">
+        <img ng-src="img/{{travel.modality}}.png" />
+        <span class="badge badge-balanced" ng-show="travel.collectivized">Collectivized</span>
         <h2>{{travel.title}}</h2>
         <p>{{travel.owner}}</p>
     </div>
     <div class="item item-body">
-        <div class="badge item-note">{{travel.date | date:"dd/MM HH:mm a"}}</div>
+        <div class='o-float-right o-text-right'>
+            <div class="">{{travel.date | date:"dd/MM HH:mm a"}}</div>
+            <br>
+            <div class="royal" ng-show="travel.package">[periodic travel]</div>
+            <br>
+            <div class="o-mini-text" ng-show="travel.package">can carry package<img src="img/package.png" class="o-imgMenu" /></div>
+        </div>
         <p><img class='o-imgTitle' src="img/from-to.png" />{{travel.from}} - {{travel.to}}</p>
         <p>nº car seats: {{trave.seats}}</p>
         <p class="o-bold">{{travel.description}}</p>
         <br>
         <p>
             <img class='o-imgMenu' src="img/smartphone.png" /> {{travel.phone}}
+        </p>
+        <p>
+            <img class='o-imgMenu' src="img/telegram.png" /> {{travel.telegram}}
         </p>
 
         <p class='text-right'>

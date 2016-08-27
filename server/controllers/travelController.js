@@ -57,10 +57,15 @@ exports.addTravel = function(req, res) {
 	    from:   req.body.from,
 	    to:   req.body.to,
 	    date:   req.body.date,
+		periodic: req.body.periodic,
 	    generateddate:   req.body.generateddate,
 		seats: req.body.seats,
+		package: req.body.package,
 		icon: req.body.icon,
-		phone: req.body.phone
+		phone: req.body.phone,
+		telegram: req.body.telegram,
+		collectivized: req.body.collectivized,
+		modality: req.body.modality
 	});
 
 	travel.save(function(err, travel) {

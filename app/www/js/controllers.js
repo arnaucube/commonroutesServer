@@ -61,26 +61,45 @@ angular.module('starter.controllers', [])
     $scope.newtravel={};
 
   // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/newtravel.html', {
+  $ionicModal.fromTemplateUrl('templates/newofferingtravel.html', {
     scope: $scope
   }).then(function(modal) {
-    $scope.modal = modal;
+    $scope.modalOffering = modal;
   });
+
+  // Create the login modal that we will use later
+  $ionicModal.fromTemplateUrl('templates/newaskingtravel.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modalAsking = modal;
+  });
+
   // Triggered in the login modal to close it
-  $scope.closeNewTravel = function() {
-    $scope.modal.hide();
+  $scope.closeNewOfferingTravel = function() {
+    $scope.modalOffering.hide();
+  };
+  // Triggered in the login modal to close it
+  $scope.closeNewAskingTravel = function() {
+    $scope.modalAsking.hide();
   };
 
   // Open the login modal
-  $scope.showNewTravel = function() {
-    $scope.modal.show();
+  $scope.showNewOfferingTravel = function() {
+    $scope.modalOffering.show();
   };
+  // Open the login modal
+  $scope.showNewAskingTravel = function() {
+    $scope.modalAsking.show();
+  };
+
   // Perform the login action when the user submits the login form
-  $scope.doNewTravel = function() {
+  $scope.doNewOfferingTravel = function() {
     console.log('Doing new travel', $scope.newtravel);
     $scope.newtravel.icon="lorry";
     $scope.newtravel.generateddate=$scope.newtravel.date;
     $scope.newtravel.owner="user";
+
+    $scope.newtravel.modality="offering";
     console.log($scope.newtravel);
     $http({
         url: 'http://localhost:3000/api/travels',
@@ -101,7 +120,7 @@ angular.module('starter.controllers', [])
     // Simulate a login delay. Remove this and replace with your login
     // code if using a login system
     $timeout(function() {
-      $scope.closeNewTravel();
+      $scope.closeNewOfferingTravel();
     }, 1000);
   };
 })
