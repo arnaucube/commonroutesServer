@@ -1,0 +1,23 @@
+<ion-view view-title="Users">
+  <ion-content>
+      <ion-refresher
+        pulling-text="Pull to refresh..."
+        on-refresh="doRefresh()">
+      </ion-refresher>
+    <div class="list">
+        <div class="o-float-right">
+            <a ng-click="showNewAskingTravel()" class="button icon ion-email"></a>
+            <a ng-click="showNewAskingTravel()" class="button icon ion-help"></a>
+            <a ng-click="showNewOfferingTravel()" class="button icon ion-plus"></a>
+        </div>
+
+        <a ng-repeat="user in users | orderBy: 'date'" class="item item-avatar" href="#/app/users/{{user.username}}">
+          <img ng-src="img/avatars/{{user.avatar}}.png">
+          <h2>{{user.username}}</h2>
+          <p>
+              {{user.description}}
+          </p>
+        </a>
+    </div>
+  </ion-content>
+</ion-view>

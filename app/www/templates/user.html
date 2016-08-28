@@ -1,0 +1,18 @@
+<ion-view view-title="User">
+  <ion-content>
+    <div class="item item-avatar">
+        <img ng-src="img/avatars/{{user.avatar}}.png" />
+        <div class="item-note o-text-right">
+            <a class="badge badge-calm" href="#/app/users/{{travel.owner}}">{{user.owner}}</a>
+        </div>
+        <h2>{{user.username}}</h2>
+    </div>
+    <div class="item item-body">
+        <p class="o-bold">{{user.description}}</p>
+        <p>{{user.mail}}</p>
+        <p>
+            <img class='o-imgMenu' src="img/telegram.png" /> {{user.telegram}}
+        </p>
+    </div>
+  </ion-content>
+</ion-view>

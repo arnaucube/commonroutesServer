@@ -19,8 +19,10 @@
           </p>
           <p class="" ng-show="travel.modality=='offering'">nºseats: {{travel.seats}}</p>
           <p class="" ng-show="travel.modality=='asking'">nºpeople: {{travel.seats}}</p>
-          <div class="badge badge-calm item-note">{{travel.owner}}</div>
-          <div class="badge badge-calm item-note">{{travel.date | date:"dd/MM HH:mm a"}}</div>
+          <div class="item-note">
+              <div class="positive">{{travel.date | date:"dd/MM HH:mm a"}}</div>
+              <div class="badge badge-calm">{{travel.owner}}</div>
+          </div>
         </a>
     </div>
   </ion-content>

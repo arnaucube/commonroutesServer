@@ -45,6 +45,7 @@ angular.module('starter.controllers', [])
 .controller('TravelsCtrl', function($scope, $http, $ionicModal, $timeout) {
     $scope.travels="";
 
+    $scope.travels=JSON.parse(localStorage.getItem('c_travels'));
 
     $scope.doRefresh = function() {
         $http.get('http://localhost:3000/api/travels')
@@ -52,6 +53,7 @@ angular.module('starter.controllers', [])
             console.log('data success');
             console.log(data); // for browser console
             $scope.travels = data; // for UI
+            localStorage.setItem('c_travels', JSON.stringify($scope.travels));
             $scope.$broadcast('scroll.refreshComplete');//refresher stop
         })
         .error(function(data, status, headers,config){
@@ -117,6 +119,7 @@ angular.module('starter.controllers', [])
             console.log(response);
             $scope.newtravel._id=response.data._id;
             $scope.travels.push($scope.newtravel);
+            $scope.newtravel={};
     },
     function(response) { // optional
             // failed
@@ -169,6 +172,47 @@ angular.module('starter.controllers', [])
             console.log('data success');
             console.log(data); // for browser console
             $scope.travel = data; // for UI
+        })
+        .error(function(data, status, headers,config){
+            console.log('data error');
+        })
+        .then(function(result){
+            travels = result.data;
+    });
+})
+
+.controller('UsersCtrl', function($scope, $http, $ionicModal, $timeout) {
+    $scope.users="";
+
+    $scope.users=JSON.parse(localStorage.getItem('c_users'));
+
+    $scope.doRefresh = function() {
+        $http.get('http://localhost:3000/api/users')
+        .success(function(data, status, headers, config){
+            console.log('data success');
+            console.log(data); // for browser console
+            $scope.users = data; // for UI
+            localStorage.setItem('c_users', JSON.stringify($scope.users));
+            $scope.$broadcast('scroll.refreshComplete');//refresher stop
+        })
+        .error(function(data, status, headers,config){
+            console.log('data error');
+            $scope.$broadcast('scroll.refreshComplete');//refresher stop
+        })
+        .then(function(result){
+            users = result.data;
+        });
+    };
+})
+
+.controller('UserCtrl', function($scope, $stateParams, $http) {
+    $scope.travel="";
+    console.log($stateParams.username);
+    $http.get('http://localhost:3000/api/users/byusername/'+$stateParams.username)
+        .success(function(data, status, headers,config){
+            console.log('data success');
+            console.log(data); // for browser console
+            $scope.user = data; // for UI
         })
         .error(function(data, status, headers,config){
             console.log('data error');

@@ -42,7 +42,8 @@ exports.findUserByUsername = function(req, res) {
     } else if (user) {
         console.log(user);
           // return the information including token as JSON
-          res.jsonp(user);
+          //res.jsonp(user);
+	  		res.status(200).jsonp(user[0]);
 
 
       }
@@ -61,7 +62,8 @@ exports.addUser = function(req, res) {
 	    description:   req.body.description,
 	    avatar:   req.body.avatar,
 	    mail:   req.body.mail,
-		admin: req.body.admin
+		phone: req.body.phone,
+		telegram: req.body.telegram
 	});
 
 	user.save(function(err, user) {
@@ -78,7 +80,8 @@ exports.updateUser = function(req, res) {
 		user.description = req.body.description;
 		user.avatar  = req.body.avatar;
 		user.mail = req.body.mail;
-		user.admin   = req.body.admin;
+		user.phone   = req.body.phone;
+		user.telegram = req.body.telegram;
 
 		user.save(function(err) {
 			if(err) return res.send(500, err.message);

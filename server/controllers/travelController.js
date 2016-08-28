@@ -28,7 +28,7 @@ exports.findById = function(req, res) {
 
 exports.findAllTravelsFromUsername = function(req, res) {
     travelModel.find({
-      authorname: req.params.userid
+      _id: req.params.userid
   }, function(err, travels) {
 
       if (err) throw err;
