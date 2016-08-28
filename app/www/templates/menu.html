@@ -18,7 +18,10 @@
     </ion-header-bar>
     <ion-content>
       <ion-list>
-        <ion-item menu-close ng-click="login()">
+        <ion-item menu-close ng-click="signup()" ng-show="!storageusername">
+            Signup
+        </ion-item>
+        <ion-item menu-close ng-click="login()" ng-show="!storageusername">
           Login
         </ion-item>
         <ion-item menu-close href="#/app/travels">
@@ -32,6 +35,9 @@
         <ion-item menu-close href="#/app/search">
             <img class='o-imgMenu' src="img/settings.png" />
           Settings
+        </ion-item>
+        <ion-item menu-close ng-click="logout()" ng-show="storageusername">
+          Logout
         </ion-item>
       </ion-list>
     </ion-content>
