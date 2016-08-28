@@ -81,6 +81,12 @@ angular.module('starter.controllers', [])
     $scope.modalAsking = modal;
   });
 
+  $ionicModal.fromTemplateUrl('templates/newaskingpackage.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modalPackage = modal;
+  });
+
   // Triggered in the login modal to close it
   $scope.closeNewOfferingTravel = function() {
     $scope.modalOffering.hide();
@@ -88,6 +94,9 @@ angular.module('starter.controllers', [])
   // Triggered in the login modal to close it
   $scope.closeNewAskingTravel = function() {
     $scope.modalAsking.hide();
+  };
+  $scope.closeNewAskingPackage = function() {
+    $scope.modalPackage.hide();
   };
 
   // Open the login modal
@@ -97,6 +106,9 @@ angular.module('starter.controllers', [])
   // Open the login modal
   $scope.showNewAskingTravel = function() {
     $scope.modalAsking.show();
+  };
+  $scope.showNewAskingPackage = function() {
+    $scope.modalPackage.show();
   };
 
   // Perform the login action when the user submits the login form
@@ -160,6 +172,38 @@ angular.module('starter.controllers', [])
     // code if using a login system
     $timeout(function() {
       $scope.closeNewAskingTravel();
+    }, 1000);
+  };
+
+  $scope.doNewAskingPackage = function() {
+    console.log('Doing new package', $scope.newtravel);
+    $scope.newtravel.icon="lorry";
+    $scope.newtravel.generateddate=$scope.newtravel.date;
+    $scope.newtravel.owner="user";
+    $scope.newtravel.package=true;
+
+    $scope.newtravel.modality="package";
+    console.log($scope.newtravel);
+    $http({
+        url: 'http://localhost:3000/api/travels',
+        method: "POST",
+        data: $scope.newtravel
+    })
+    .then(function(response) {
+            // success
+            console.log("response: ");
+            console.log(response);
+            $scope.newtravel._id=response.data._id;
+            $scope.travels.push($scope.newtravel);
+    },
+    function(response) { // optional
+            // failed
+    });
+
+    // Simulate a login delay. Remove this and replace with your login
+    // code if using a login system
+    $timeout(function() {
+      $scope.closeNewAskingPackage();
     }, 1000);
   };
 })

@@ -22,4 +22,4 @@ var travelSchema = new Schema({
 module.exports = mongoose.model('travelModel', travelSchema);
 
 
-//modality can be: offering, asking
+//modality can be: offering, asking, package
