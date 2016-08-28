@@ -71,7 +71,7 @@ apiRoutes.route('/travels')
 apiRoutes.route('/travels/:id')
 .get(travelCtrl.findById)
 
-/* OJU AQUÏ TREC la verificació de token temporalment, per fer les proves des de l'app
+// OJU AQUÏ TREC la verificació de token temporalment, per fer les proves des de l'app
 // route middleware to verify a token
 apiRoutes.use(function(req, res, next) {
 
@@ -96,13 +96,14 @@ apiRoutes.use(function(req, res, next) {
 
     // if there is no token
     // return an error
-    return res.status(403).send({
+    return res.status(201).send({
         success: false,
         message: 'No token provided.'
     });
 
   }
-});*/
+}); //fi verificació de token
+
 
 apiRoutes.route('/users/:id')
   .put(userCtrl.updateUser)

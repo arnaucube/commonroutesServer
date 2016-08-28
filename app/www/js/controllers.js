@@ -1,6 +1,6 @@
 
-//var urlapi="http://localhost:3000/api/";
-var urlapi="http://192.168.1.40:3000/api/";
+var urlapi="http://localhost:3000/api/";
+//var urlapi="http://192.168.1.40:3000/api/";
 //localStorage.setItem("c_username", "user2");
 //localStorage.setItem("c_token", "");
 
@@ -77,6 +77,7 @@ angular.module('starter.controllers', [])
     },
     function(response) { // optional
             // failed
+            console.log(response);
     });
 
   };
@@ -110,7 +111,7 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('TravelsCtrl', function($scope, $http, $ionicModal, $timeout) {
+.controller('TravelsCtrl', function($scope, $http, $ionicModal, $timeout, $ionicLoading) {
     $scope.travels="";
 
     $scope.travels=JSON.parse(localStorage.getItem('c_travels'));
@@ -130,6 +131,7 @@ angular.module('starter.controllers', [])
         })
         .then(function(result){
             travels = result.data;
+            $ionicLoading.show({ template: 'Travels actualized from server!', noBackdrop: true, duration: 2000 });
         });
     };
 
@@ -200,6 +202,10 @@ angular.module('starter.controllers', [])
             $scope.newtravel._id=response.data._id;
             $scope.travels.push($scope.newtravel);
             $scope.newtravel={};
+            if(response.data.success==false){
+
+                $ionicLoading.show({ template: 'failed to generate new travel', noBackdrop: true, duration: 2000 });
+            }
     },
     function(response) { // optional
             // failed
@@ -231,6 +237,10 @@ angular.module('starter.controllers', [])
             console.log(response);
             $scope.newtravel._id=response.data._id;
             $scope.travels.push($scope.newtravel);
+            if(response.data.success==false){
+
+                $ionicLoading.show({ template: 'failed to generate new asking travel', noBackdrop: true, duration: 2000 });
+            }
     },
     function(response) { // optional
             // failed
@@ -263,6 +273,10 @@ angular.module('starter.controllers', [])
             console.log(response);
             $scope.newtravel._id=response.data._id;
             $scope.travels.push($scope.newtravel);
+            if(response.data.success==false){
+
+                $ionicLoading.show({ template: 'failed to generate new asking package', noBackdrop: true, duration: 2000 });
+            }
     },
     function(response) { // optional
             // failed
