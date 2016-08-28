@@ -1,7 +1,13 @@
+
+//var urlapi="http://localhost:3000/api/";
+var urlapi="http://192.168.1.40:3000/api/";
+localStorage.setItem("c_username", "user2");
+localStorage.setItem("c_token", "");
+
+
 angular.module('starter.controllers', [])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
-
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -48,7 +54,7 @@ angular.module('starter.controllers', [])
     $scope.travels=JSON.parse(localStorage.getItem('c_travels'));
 
     $scope.doRefresh = function() {
-        $http.get('http://localhost:3000/api/travels')
+        $http.get(urlapi + 'travels')
         .success(function(data, status, headers,config){
             console.log('data success');
             console.log(data); // for browser console
@@ -116,12 +122,12 @@ angular.module('starter.controllers', [])
     console.log('Doing new travel', $scope.newtravel);
     $scope.newtravel.icon="lorry";
     $scope.newtravel.generateddate=$scope.newtravel.date;
-    $scope.newtravel.owner="user";
+    $scope.newtravel.owner=localStorage.getItem("c_username");
 
     $scope.newtravel.modality="offering";
     console.log($scope.newtravel);
     $http({
-        url: 'http://localhost:3000/api/travels',
+        url: urlapi + 'travels',
         method: "POST",
         data: $scope.newtravel
     })
@@ -148,12 +154,12 @@ angular.module('starter.controllers', [])
     console.log('Doing new travel', $scope.newtravel);
     $scope.newtravel.icon="lorry";
     $scope.newtravel.generateddate=$scope.newtravel.date;
-    $scope.newtravel.owner="user";
+    $scope.newtravel.owner=localStorage.getItem("c_username");
 
     $scope.newtravel.modality="asking";
     console.log($scope.newtravel);
     $http({
-        url: 'http://localhost:3000/api/travels',
+        url: urlapi + 'travels',
         method: "POST",
         data: $scope.newtravel
     })
@@ -179,13 +185,13 @@ angular.module('starter.controllers', [])
     console.log('Doing new package', $scope.newtravel);
     $scope.newtravel.icon="lorry";
     $scope.newtravel.generateddate=$scope.newtravel.date;
-    $scope.newtravel.owner="user";
+    $scope.newtravel.owner=localStorage.getItem("c_username");
     $scope.newtravel.package=true;
 
     $scope.newtravel.modality="package";
     console.log($scope.newtravel);
     $http({
-        url: 'http://localhost:3000/api/travels',
+        url: urlapi + 'travels',
         method: "POST",
         data: $scope.newtravel
     })
@@ -209,9 +215,10 @@ angular.module('starter.controllers', [])
 })
 
 .controller('TravelCtrl', function($scope, $stateParams, $http) {
+    $scope.storageusername=localStorage.getItem("c_username");
     $scope.travel="";
     console.log($stateParams.travelId);
-    $http.get('http://localhost:3000/api/travels/'+$stateParams.travelId)
+    $http.get(urlapi + 'travels/'+$stateParams.travelId)
         .success(function(data, status, headers,config){
             console.log('data success');
             console.log(data); // for browser console
@@ -231,7 +238,7 @@ angular.module('starter.controllers', [])
     $scope.users=JSON.parse(localStorage.getItem('c_users'));
 
     $scope.doRefresh = function() {
-        $http.get('http://localhost:3000/api/users')
+        $http.get(urlapi + 'users')
         .success(function(data, status, headers, config){
             console.log('data success');
             console.log(data); // for browser console
@@ -250,13 +257,26 @@ angular.module('starter.controllers', [])
 })
 
 .controller('UserCtrl', function($scope, $stateParams, $http) {
-    $scope.travel="";
+    //$scope.user="";
     console.log($stateParams.username);
-    $http.get('http://localhost:3000/api/users/byusername/'+$stateParams.username)
+    $http.get(urlapi + 'users/byusername/'+$stateParams.username)
         .success(function(data, status, headers,config){
             console.log('data success');
             console.log(data); // for browser console
             $scope.user = data; // for UI
+        })
+        .error(function(data, status, headers,config){
+            console.log('data error');
+        })
+        .then(function(result){
+            user = result.data;
+    });
+
+    $http.get(urlapi + 'travels/user/'+$stateParams.username)
+        .success(function(data, status, headers,config){
+            console.log('data success');
+            console.log(data); // for browser console
+            $scope.travels = data; // for UI
         })
         .error(function(data, status, headers,config){
             console.log('data error');

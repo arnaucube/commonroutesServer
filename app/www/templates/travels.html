@@ -14,15 +14,16 @@
         <a ng-repeat="travel in travels | orderBy: 'date'" class="item item-avatar" href="#/app/travels/{{travel._id}}">
           <img ng-src="img/{{travel.modality}}.png">
           <h2>{{travel.title}}</h2>
+          <div class="item-note">
+              <div class="positive">{{travel.date | date:"dd/MM HH:mm a"}}</div>
+              <div class="badge badge-calm">{{travel.owner}}</div>
+          </div>
           <p>
               {{travel.description}}
           </p>
           <p class="" ng-show="travel.modality=='offering'">nºseats: {{travel.seats}}</p>
           <p class="" ng-show="travel.modality=='asking'">nºpeople: {{travel.seats}}</p>
-          <div class="item-note">
-              <div class="positive">{{travel.date | date:"dd/MM HH:mm a"}}</div>
-              <div class="badge badge-calm">{{travel.owner}}</div>
-          </div>
+
         </a>
     </div>
   </ion-content>

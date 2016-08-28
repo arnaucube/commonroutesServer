@@ -59,7 +59,7 @@ apiRoutes.route('/users/:id')
     .get(userCtrl.findById);
 apiRoutes.route('/users/byusername/:username')
     .get(userCtrl.findUserByUsername);
-apiRoutes.route('/travels/user/:userid')
+apiRoutes.route('/travels/user/:username')
     .get(travelCtrl.findAllTravelsFromUsername);
 
 apiRoutes.route('/auth')
