@@ -15,6 +15,13 @@ exports.findAllUsers = function(req, res) {
 	userModel.find(function(err, users) {
     if(err) res.send(500, err.message);
 
+	//password deletion
+	for(var i=0; i<users.length; i++)
+	{
+		users[i].password="";
+		console.log(users[i].password);
+	}
+
     console.log('GET /users');
 		res.status(200).jsonp(users);
 	});
@@ -26,6 +33,9 @@ exports.findById = function(req, res) {
     if(err) return res.send(500, err.message);
 
     console.log('GET /users/' + req.params.id);
+	//password deletion
+
+		user.password="";
 		res.status(200).jsonp(user);
 	});
 };
@@ -40,9 +50,10 @@ exports.findUserByUsername = function(req, res) {
       if (!user) {
         res.json({ success: false, message: 'no user found' });
     } else if (user) {
-        console.log(user);
           // return the information including token as JSON
           //res.jsonp(user);
+		  user.password="";
+          console.log(user);
 	  		res.status(200).jsonp(user[0]);
 
 
@@ -85,6 +96,7 @@ exports.updateUser = function(req, res) {
 
 		user.save(function(err) {
 			if(err) return res.send(500, err.message);
+			user.password="";
       	res.status(200).jsonp(user);
 		});
 	});

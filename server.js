@@ -9,7 +9,7 @@ var morgan      = require('morgan');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config = require('./config'); // get our config file
 
-
+mongoose.Promise = global.Promise;
 // Connection to DB
 mongoose.connect(config.database, function(err, res) {
   if(err) throw err;
@@ -45,7 +45,7 @@ app.use(express.static(__dirname + '/web'));
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, X-Access-Token");
   next();
 });
 
@@ -88,6 +88,7 @@ apiRoutes.use(function(req, res, next) {
       } else {
         // if everything is good, save to request for use in other routes
         req.decoded = decoded;
+        //console.log("decoded " + decoded);
         next();
       }
     });

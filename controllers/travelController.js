@@ -47,9 +47,7 @@ exports.findAllTravelsFromUsername = function(req, res) {
 };
 
 exports.addTravel = function(req, res) {
-	console.log('POST new travel, content: ' + req.body.content);
-	console.log(req.body);
-
+	console.log('POST new travel, title: ' + req.body.title);
 	var travel = new travelModel({
 		title: req.body.title,
 	    description:   req.body.description,

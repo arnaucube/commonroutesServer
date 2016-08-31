@@ -4,14 +4,14 @@
   "description": "comunalCar, carsharing",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"  
+    "start": "node server.js"
   },
   "dependencies": {
-      "mongoose": "^4.5.6",
-      "express": "^4.7.1",
-      "method-override": "^2.1.2",
-      "body-parser": "^1.5.1",
-      "jsonwebtoken" : "latest",
-      "morgan" : "latest"
+    "body-parser": "latest",
+    "express": "^4.7.1",
+    "jsonwebtoken": "latest",
+    "method-override": "^2.1.2",
+    "mongoose": "latest",
+    "morgan": "latest"
   }
 }
