@@ -69,7 +69,7 @@ apiRoutes.route('/travels')
   .get(travelCtrl.findAllTravels);
 
 apiRoutes.route('/travels/:id')
-.get(travelCtrl.findById)
+    .get(travelCtrl.findById);
 
 // OJU AQUÏ TREC la verificació de token temporalment, per fer les proves des de l'app
 // route middleware to verify a token
@@ -80,7 +80,6 @@ apiRoutes.use(function(req, res, next) {
 
   // decode token
   if (token) {
-
     // verifies secret and checks exp
     jwt.verify(token, app.get('superSecret'), function(err, decoded) {
       if (err) {

@@ -92,11 +92,11 @@ exports.updateTravel = function(req, res) {
 
 //DELETE
 exports.deleteTravel = function(req, res) {
-	ActivityModel.findById(req.params.id, function(err, activity) {
-		activity.remove(function(err) {
+	travelModel.findById(req.params.id, function(err, travel) {
+		travel.remove(function(err) {
 			if(err) return res.send(500, err.message);
       		res.status(200).jsonp(req.params.id);
-		    console.log('DELETE /activities/' + req.params.id);
+		    console.log('DELETE /traves/' + req.params.id);
 		})
 	});
 };
