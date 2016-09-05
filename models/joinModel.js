@@ -6,8 +6,7 @@ var joinSchema = new Schema({
     travelId: { type: String },
     joinedUserId: { type: String },
     joinedUsername: { type: String },
-    acceptedUserId: { type: String },
-    comment: { type: String }
+    acceptedUserId: { type: String }
 
 });
 module.exports = mongoose.model('joinModel', joinSchema);

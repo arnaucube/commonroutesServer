@@ -31,6 +31,7 @@ var userCtrl = require('./controllers/userController');
 
 var travelMdl     = require('./models/travelModel')(app, mongoose);
 var joinMdl     = require('./models/joinModel')(app, mongoose);
+var commentMdl     = require('./models/commentModel')(app, mongoose);
 var travelCtrl = require('./controllers/travelController');
 
 /*// Example Route
@@ -73,6 +74,8 @@ apiRoutes.route('/travels/:id')
     .get(travelCtrl.findById);
 apiRoutes.route('/travels/join/:travelId')
     .get(travelCtrl.getJoinsByTravelId);
+apiRoutes.route('/travels/comment/:travelId')
+    .get(travelCtrl.getCommentsByTravelId);
 
 // OJU AQUÏ TREC la verificació de token temporalment, per fer les proves des de l'app
 // route middleware to verify a token
@@ -119,8 +122,10 @@ apiRoutes.route('/travels/:id')
   .put(travelCtrl.updateTravel)
   .delete(travelCtrl.deleteTravel);
 
-apiRoutes.route('/travels/join/:id')
+apiRoutes.route('/travels/join/:travelId')
     .post(travelCtrl.addJoin);
+apiRoutes.route('/travels/comment/:travelId')
+    .post(travelCtrl.addComment);
 
 app.use('/api', apiRoutes);
 // end of API routes -------------------------------------
