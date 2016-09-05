@@ -34,8 +34,9 @@ exports.findById = function(req, res) {
 
     console.log('GET /users/' + req.params.id);
 	//password deletion
-
+	if(user!=null){
 		user.password="";
+	}
 		res.status(200).jsonp(user);
 	});
 };
@@ -144,7 +145,8 @@ console.log(user);
           success: true,
           message: 'Enjoy your token!',
           token: token,
-		  avatar: user.avatar
+		  avatar: user.avatar,
+		  userid: user._id
         });
       }
 

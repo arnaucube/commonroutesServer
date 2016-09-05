@@ -4,6 +4,8 @@ var travelModel  = mongoose.model('travelModel');
 
 var userModel  = mongoose.model('userModel');
 
+var joinModel  = mongoose.model('joinModel');
+
 //GET
 exports.findAllTravels = function(req, res) {
 
@@ -99,4 +101,39 @@ exports.deleteTravel = function(req, res) {
 		    console.log('DELETE /traves/' + req.params.id);
 		})
 	});
+};
+
+
+/* join */
+exports.addJoin = function(req, res) {
+	var join = new joinModel({
+		travelId: req.body.travelId,
+		joinedUserId: req.body.joinedUserId,
+		joinedUsername: req.body.joinedUsername,
+		acceptedUserId: req.body.acceptedUserId,
+		comment: req.body.comment
+	});
+
+	join.save(function(err, join) {
+		if(err) return res.send(500, err.message);
+    res.status(200).jsonp(join);
+	});
+};
+
+exports.getJoinsByTravelId = function(req, res) {
+    joinModel.find({
+      travelId: req.params.travelId
+  }, function(err, joins) {
+
+      if (err) throw err;
+
+      if (!joins) {
+        res.json({ success: false, message: 'no joins for travelId' });
+    } else if (joins) {
+          // return the information including token as JSON
+		 res.jsonp(joins);
+
+      }
+
+    });
 };
