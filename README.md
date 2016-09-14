@@ -9,121 +9,99 @@ frontend app code: https://github.com/idoctnef/collectivecarApp
     Angularjs + Ionic + MaterialDesign
 
 
-##Project Structure:
-```
-collectivecar/
-	server/
-		controllers/
-			userController.js
-			travelController.js
-			carController.js
-			askfortravelController.js
-		models/
-			userModel.js
-			travelModel.js
-			carModel.js
-			needtravelModel.js
-		node_modules/
-		config.js
-		server.js
-		package.js
-		README.md
-```
 
 
 ##To Do List:
-**Backend:**
+**Backend and Frontend:**
 ```
--signup user			--> done
--loggin user			--> done
--update user profile	--> done
--create new travel		--> done
--update travel			--> done
--delete travel			--> done
--create offeringCar
+-signup user	                    		--> done
+-loggin user	                    		--> done
+-update user profile                 	--> done
+-create new travel	                 	--> done
+-update travel		                  	--> done
+-delete travel		                  	--> done
+-create offeringCar                 	--> done
 -update offeringCar
 -delete offeringCar
--create askingForTravel (needtravel)
+-create askingForTravel (needtravel)  --> done
 -update askingForTravel
 -delete askgingForTravel
--user joins a car
--user joins travel
+-create askingPackage (need transport package)  --> done
+-update askingPackage
+-delete askgingPackage
+-user joins a car                     --> done
+-user offer car to a travel           --> done
+-user offer car to a askingpackage    --> done
+-user unjoins a car                   
+-user unoffer car to a travel         
+-user unoffer car to a askingpackage  
+-comment publication(car, travel, package)    --> done
+
+-web page (webapp)
 ```
 
-**Frontend:**
-```
--signup user
--loggin user
--update user profile
--create new travel
--update travel
--delete travel
--create offeringCar
--update offeringCar
--delete offeringCar
--create askingForTravel
--update askingForTravel
--delete askgingForTravel
-```
+
 --------------------
 ####**PARA LA BASE DE DATOS** [para definir como queremos q esté estructurado, pensando en las funcionalidades que queremos tener]:
 
-**user**:
--username
--password
--description
--icon/avatar
--mail
--phone
 
-**travel**: (seria cuando un user publica un nuevo trayecto que va a hacer)
--title
--description
--owner (user q ha publicado el viaje)
--from
--to
--date
--description
--generateddate (cuando el user genera el aviso)
--seats (plazas de coche disponibles)
+```
+var userSchema = new Schema({
+    username: { type: String },
+    password: { type: String },
+    description:   { type: String },
+    avatar:   { type: String },
+    mail:   { type: String },
+    phone: { type: String },
+    telegram: { type: String }
+})
+var travelSchema = new Schema({
+    title: { type: String },
+    description: { type: String },
+    owner:   { type: String },
+    from: { type: String },
+    to: { type: String },
+    date: { type: Date },
+    periodic: { type: Boolean },
+    generateddate: { type: Date },
+    seats: { type: Number },
+    package: { type: Boolean },
+    icon: { type: String },
+    phone: { type: Number },
+    telegram: { type: String },
+    collectivized: { type: Boolean },
+    modality: { type: String } //if is an offering travel or asking for travel
+})
+var joinSchema = new Schema({
+    travelId: { type: String },
+    joinedUserId: { type: String },
+    joinedUsername: { type: String },
+    acceptedUserId: { type: String },
+    joinedAvatar: { type: String }
 
-**car**: (cuando un user tiene un coche disponible para hacer viajes que se necesiten)
--title
--description
--owner (user q ha publicado el viaje)
--zone (la zona por la que está)
--available (cuando el user esta disponible, marca que esta disponible, si unos dias no podrá, lo desactiva)
--generateddate
--seats (plazas de coche disponibles)
+});
+var commentSchema = new Schema({
+    travelId: { type: String },
+    commentUserId: { type: String },
+    commentUsername: { type: String },
+    comment: { type: String },
+    commentAvatar: { type: String }
 
-**needtravel**: (cuando un user no dispone de coche y necesita hacer un travel)
--title
--description
--owner (user q ha publicado el asking travel)
--from
--to
--date (las fechas para cuando se necesita el viaje)
--generateddate (cuando el user genera el aviso)
--seats (plazas de coche necesarias)
-
-**collectivizedCar**: (los coches/furgos colectivos) --> quizás esto no hace falta, solo usar 'offeringCar' normal con un añadido para notificar que es un coche colectivizado
--owner (user q publica el coche)
--title
--seats (plazas de coche disponibles)
-
+});
+```
 --------------------
 
 
-
-####**OTRAS COSAS**:
-lo de poner o no un mapa, de entrada no destinaria esfuerzos en eso. Para la primera versión de la aplicación no hace falta, solo añade confort visual, para ver el recorrido, pero de entrada para una app q pone en contacto personas para compartir coche, no es algo imprescindible quizás
-
-
-
-####**RESOURCES to use**:
+####**RESOURCES using**:
 
 car icons [http://www.flaticon.com/packs/transportation-7](http://www.flaticon.com/packs/transportation-7)
 
 css para la app: matterializeCSS [http://materializecss.com/](http://materializecss.com/)
 
 avatars users: [http://www.flaticon.com/packs/animal-icon-collection](http://www.flaticon.com/packs/animal-icon-collection)
+
+
+
+
+
+mirar per fer hash de passwords https://www.npmjs.com/package/bcrypt-nodejs

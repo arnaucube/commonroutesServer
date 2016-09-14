@@ -111,7 +111,8 @@ exports.addJoin = function(req, res) {
 		travelId: req.params.travelId,
 		joinedUserId: req.body.joinedUserId,
 		joinedUsername: req.body.joinedUsername,
-		acceptedUserId: req.body.acceptedUserId
+		acceptedUserId: req.body.acceptedUserId,
+		joinedAvatar: req.body.joinedAvatar
 	});
 
 	join.save(function(err, join) {
@@ -145,7 +146,8 @@ exports.addComment = function(req, res) {
 		travelId: req.params.travelId,
 		commentUserId: req.body.commentUserId,
 		commentUsername: req.body.commentUsername,
-		comment: req.body.comment
+		comment: req.body.comment,
+		commentAvatar: req.body.commentAvatar
 	});
 
 	comment.save(function(err, comment) {
