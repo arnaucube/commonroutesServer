@@ -9,6 +9,11 @@ var userSchema = new Schema({
     avatar:   { type: String },
     mail:   { type: String },
     phone: { type: String },
-    telegram: { type: String }
+    telegram: { type: String },
+    valorations: [{
+      username: { type: String },
+      value: { type: Number },
+      comment: { type: String }
+    }]
 })
 module.exports = mongoose.model('userModel', userSchema);

@@ -14,30 +14,37 @@ frontend app code: https://github.com/idoctnef/collectivecarApp
 ##To Do List:
 **Backend and Frontend:**
 ```
--signup user	                    		--> done
--loggin user	                    		--> done
--update user profile                 	--> done
--create new travel	                 	--> done
--update travel		                  	--> done
--delete travel		                  	--> done
--create offeringCar                 	--> done
+-signup user	                                                  		--> done
+-loggin user	                                                  		--> done
+-update user profile                                              	--> done
+-create new travel	                                               	--> done
+-update travel		                                                 	--> done
+-delete travel		                                                 	--> done
+-create offeringCar                                                	--> done
 -update offeringCar
 -delete offeringCar
--create askingForTravel (needtravel)  --> done
+-create askingForTravel (needtravel)                                --> done
 -update askingForTravel
 -delete askgingForTravel
--create askingPackage (need transport package)  --> done
+-create askingPackage (need transport package)                      --> done
 -update askingPackage
 -delete askgingPackage
--user joins a car                     --> done
--user offer car to a travel           --> done
--user offer car to a askingpackage    --> done
+-user joins a car                                                   --> done
+-user offer car to a travel                                         --> done
+-user offer car to a askingpackage                                  --> done
 -user unjoins a car                   
 -user unoffer car to a travel         
 -user unoffer car to a askingpackage  
--comment publication(car, travel, package)    --> done
+-comment publication(car, travel, package)                          --> done
+-valorating users system
 
--web page (webapp)
+-UX design
+-interface graphic design
+-icons
+-api more secure and robust (comprovations, hash passwords, ...)
+
+-web page (webapp) --> (de moment es pot penjar la app en versió web tal qual,
+  que es podrà fer servir des d'un navegador com si fós la app)
 ```
 
 
