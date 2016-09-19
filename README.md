@@ -22,19 +22,19 @@ frontend app code: https://github.com/idoctnef/collectivecarApp
 -delete travel		                                                 	--> done
 -create offeringCar                                                	--> done
 -update offeringCar
--delete offeringCar
+-delete offeringCar                                                 --> done
 -create askingForTravel (needtravel)                                --> done
 -update askingForTravel
--delete askgingForTravel
+-delete askgingForTravel                                            --> done
 -create askingPackage (need transport package)                      --> done
 -update askingPackage
--delete askgingPackage
+-delete askgingPackage                                              --> done
 -user joins a car                                                   --> done
 -user offer car to a travel                                         --> done
 -user offer car to a askingpackage                                  --> done
--user unjoins a car                   
--user unoffer car to a travel         
--user unoffer car to a askingpackage  
+-user unjoins a car                                                 --> done
+-user unoffer car to a travel                                       --> done
+-user unoffer car to a askingpackage                                --> done
 -comment publication(car, travel, package)                          --> done
 -valorating users system
 

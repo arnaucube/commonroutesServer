@@ -121,6 +121,25 @@ exports.addJoin = function(req, res) {
 	});
 };
 
+exports.doUnjoin = function(req, res) {
+	joinModel.find({
+		travelId: req.params.travelId
+	}, function(err, joins) {
+		for(var i=0; i<joins.length; i++)
+		{
+			if(joins[i].joinedUsername==req.body.joinedUsername)
+			{
+				joins[i].remove(function(err) {
+					if(err) return res.send(500, err.message);
+		      		res.status(200).jsonp('removed');
+				    console.log('DELETE /unjoin/' + req.params.id);
+				})
+			}
+		}
+
+	});
+};
+
 exports.getJoinsByTravelId = function(req, res) {
     joinModel.find({
       travelId: req.params.travelId

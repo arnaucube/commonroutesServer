@@ -124,6 +124,9 @@ apiRoutes.route('/travels/:id')
 
 apiRoutes.route('/travels/join/:travelId')
     .post(travelCtrl.addJoin);
+apiRoutes.route('/travels/unjoin/:travelId')
+    .post(travelCtrl.doUnjoin);
+
 apiRoutes.route('/travels/comment/:travelId')
     .post(travelCtrl.addComment);
 
