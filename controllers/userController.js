@@ -2,6 +2,8 @@
 var mongoose = require('mongoose');
 var userModel  = mongoose.model('userModel');
 
+var md5 = require('md5');
+
 /* */
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var express         = require("express");
@@ -70,7 +72,7 @@ exports.addUser = function(req, res) {
 
 	var user = new userModel({
 		username: req.body.username,
-		password: req.body.password,
+		password: md5(req.body.password),
 	    description:   req.body.description,
 	    avatar:   req.body.avatar,
 	    mail:   req.body.mail,
@@ -88,7 +90,7 @@ exports.addUser = function(req, res) {
 exports.updateUser = function(req, res) {
 	userModel.findById(req.params.id, function(err, user) {
 		user.username   = req.body.username;
-		user.password    = req.body.password;
+		user.password    = md5(req.body.password);
 		user.description = req.body.description;
 		user.avatar  = req.body.avatar;
 		user.mail = req.body.mail;
@@ -127,6 +129,8 @@ exports.login = function(req, res) {
     if (!user) {
       res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
+
+			req.body.password=md5(req.body.password);
 
       // check if password matches
       if (user.password != req.body.password) {

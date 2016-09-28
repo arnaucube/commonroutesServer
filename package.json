@@ -12,6 +12,7 @@
     "jsonwebtoken": "latest",
     "method-override": "^2.1.2",
     "mongoose": "latest",
-    "morgan": "latest"
+    "morgan": "latest",
+    "md5": "latest"
   }
 }
