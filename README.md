@@ -38,6 +38,8 @@ frontend app code: https://github.com/idoctnef/collectivecarApp
 -comment publication(car, travel, package)                          --> done
 -valorating users system
 
+-GUI admin page
+
 -UX design
 -interface graphic design
 -icons
