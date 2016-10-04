@@ -1,0 +1,46 @@
+/* Empty. Add your own CSS if you like */
+.o-imgMenu{
+    width: 25px!important;
+    height: 25px!important;
+}
+.o-imgTitle{
+    width: 40px!important;
+    height: 40px!important;
+}
+.o-bold{
+    font-weight: bold!important;
+}
+.o-float-right{
+    float: right;
+}
+.o-text-right{
+    text-align: right;
+}
+.o-mini-text{
+    font-size: 12px;
+    display: inline-block;
+}
+.o-img-joined{
+    width: 20px!important;
+    height: 20px!important;
+}
+.o-img-new{
+    width: 30px!important;
+    height: 30px!important;
+}
+.o-badgeCollectivized{
+  background: #33CD5F;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: #ffffff;
+  font-weight: bold;
+}
+.o-badge-calm{
+  background: #11C1F3;
+  padding: 5px;
+  border-radius: 7px;
+  font-size: 12px;
+  color: #ffffff;
+  font-weight: bold;
+}
