@@ -2,8 +2,8 @@ module.exports = {
 
     /*'secret': process.env.SECRET,
     'database': process.env.MONGO_DSN,*/
-    'secret': 'secretfortoken',
-    'database': 'mongodb://localhost/comunalcar',
+    'secret': prompt.env.SECRET,
+    'database': process.env.MONGO_DSN,
     "port" : process.env.PORT || 3000
 
 };
