@@ -17,7 +17,19 @@ var travelSchema = new Schema({
     phone: { type: Number },
     telegram: { type: String },
     collectivized: { type: Boolean },
-    modality: { type: String } //if is an offering travel or asking for travel
+    modality: { type: String }, //if is an offering travel or asking for travel
+    joins: [{
+      joinedUserId: { type: String },
+      joinedUsername: { type: String },
+      acceptedUserId: { type: String },
+      joinedAvatar: { type: String }
+    }],
+    comments: [{
+      commentUserId: { type: String },
+      commentUsername: { type: String },
+      comment: { type: String },
+      commentAvatar: { type: String }
+    }]
 })
 module.exports = mongoose.model('travelModel', travelSchema);
 

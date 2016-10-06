@@ -13,6 +13,7 @@
     "method-override": "^2.1.2",
     "mongoose": "latest",
     "morgan": "latest",
-    "md5": "latest"
+    "md5": "latest",
+    "mongoose-unique-validator": "^1.0.2"
   }
 }

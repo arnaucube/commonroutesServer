@@ -107,22 +107,25 @@ exports.deleteTravel = function(req, res) {
 
 /* join */
 exports.addJoin = function(req, res) {
-	var join = new joinModel({
-		travelId: req.params.travelId,
-		joinedUserId: req.body.joinedUserId,
-		joinedUsername: req.body.joinedUsername,
-		acceptedUserId: req.body.acceptedUserId,
-		joinedAvatar: req.body.joinedAvatar
-	});
+	travelModel.findById(req.params.travelId, function(err, travel){
+		console.log(travel.title);
+		var join = {
+			joinedUserId: req.body.joinedUserId,
+			joinedUsername: req.body.joinedUsername,
+			acceptedUserId: req.body.acceptedUserId,
+			joinedAvatar: req.body.joinedAvatar
+		};
+		travel.joins.push(join);
 
-	join.save(function(err, join) {
-		if(err) return res.send(500, err.message);
-    res.status(200).jsonp(join);
+		travel.save(function(err, travel) {
+			if(err) return res.send(500, err.message);
+	    res.status(200).jsonp(travel);
+		});
 	});
 };
 
 exports.doUnjoin = function(req, res) {
-	joinModel.find({
+	/*joinModel.find({
 		travelId: req.params.travelId
 	}, function(err, joins) {
 		for(var i=0; i<joins.length; i++)
@@ -137,6 +140,20 @@ exports.doUnjoin = function(req, res) {
 			}
 		}
 
+	});*/
+	travelModel.findById(req.params.travelId, function(err, travel){
+		for(var i=0; i<travel.joins.length; i++)
+		{
+			if(travel.joins[i].joinedUsername==req.body.joinedUsername)
+			{
+				travel.joins.splice(i, 1);
+			}
+		}
+
+		travel.save(function(err, travel) {
+			if(err) return res.send(500, err.message);
+			res.status(200).jsonp(travel);
+		});
 	});
 };
 

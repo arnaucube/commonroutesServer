@@ -15,6 +15,7 @@ frontend app code: https://github.com/idoctnef/collectivecarApp
 **Backend and Frontend:**
 ```
 -signup user	                                                  		--> done
+-signup unique username                               		          --> done
 -loggin user	                                                  		--> done
 -update user profile                                              	--> done
 -create new travel	                                               	--> done

@@ -122,9 +122,14 @@ apiRoutes.route('/travels/:id')
   .put(travelCtrl.updateTravel)
   .delete(travelCtrl.deleteTravel);
 
-apiRoutes.route('/travels/join/:travelId')
+/*apiRoutes.route('/travels/join/:travelId')
     .post(travelCtrl.addJoin);
 apiRoutes.route('/travels/unjoin/:travelId')
+    .post(travelCtrl.doUnjoin);*/
+
+apiRoutes.route('/travels/:travelId/join')
+    .post(travelCtrl.addJoin);
+apiRoutes.route('/travels/:travelId/unjoin')
     .post(travelCtrl.doUnjoin);
 
 apiRoutes.route('/travels/comment/:travelId')
