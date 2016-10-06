@@ -135,22 +135,7 @@ exports.addJoin = function(req, res) {
 };
 
 exports.doUnjoin = function(req, res) {
-	/*joinModel.find({
-		travelId: req.params.travelId
-	}, function(err, joins) {
-		for(var i=0; i<joins.length; i++)
-		{
-			if(joins[i].joinedUsername==req.body.joinedUsername)
-			{
-				joins[i].remove(function(err) {
-					if(err) return res.send(500, err.message);
-		      		res.status(200).jsonp('removed');
-				    console.log('DELETE /unjoin/' + req.params.id);
-				})
-			}
-		}
 
-	});*/
 	travelModel.findById(req.params.travelId, function(err, travel){
 		for(var i=0; i<travel.joins.length; i++)
 		{
@@ -192,7 +177,7 @@ exports.getJoinsByTravelId = function(req, res) {
 
 /* comment */
 exports.addComment = function(req, res) {
-	var comment = new commentModel({
+	/*var comment = new commentModel({
 		travelId: req.params.travelId,
 		commentUserId: req.body.commentUserId,
 		commentUsername: req.body.commentUsername,
@@ -203,6 +188,26 @@ exports.addComment = function(req, res) {
 	comment.save(function(err, comment) {
 		if(err) return res.send(500, err.message);
     res.status(200).jsonp(comment);
+	});*/
+
+	travelModel.findById(req.params.travelId, function(err, travel){
+		console.log(travel.title);
+		var comment = {
+			commentUserId: req.body.commentUserId,
+			commentUsername: req.body.commentUsername,
+			comment: req.body.comment,
+			commentAvatar: req.body.commentAvatar
+		};
+		travel.comments.push(comment);
+
+		travel.save(function(err, travel) {
+			if(err) return res.send(500, err.message);
+	    //res.status(200).jsonp(travel);
+			travelModel.find(function(err, travels) {
+			    if(err) res.send(500, err.message);
+					res.status(200).jsonp(travels);
+			});
+		});
 	});
 };
 

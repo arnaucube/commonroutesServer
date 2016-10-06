@@ -132,7 +132,7 @@ apiRoutes.route('/travels/:travelId/join')
 apiRoutes.route('/travels/:travelId/unjoin')
     .post(travelCtrl.doUnjoin);
 
-apiRoutes.route('/travels/comment/:travelId')
+apiRoutes.route('/travels/:travelId/comment')
     .post(travelCtrl.addComment);
 
 app.use('/api', apiRoutes);
