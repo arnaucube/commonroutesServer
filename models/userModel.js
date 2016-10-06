@@ -16,6 +16,11 @@ var userSchema = new Schema({
       username: { type: String },
       value: { type: Number },
       comment: { type: String }
+    }],
+    favs: [{
+      username: { type: String },
+      userId: { type: String },
+      avatar: { type: String }
     }]
 })
 

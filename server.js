@@ -132,6 +132,11 @@ apiRoutes.route('/travels/:travelId/join')
 apiRoutes.route('/travels/:travelId/unjoin')
     .post(travelCtrl.doUnjoin);
 
+apiRoutes.route('/users/:userId/fav')
+    .post(userCtrl.addFav);
+apiRoutes.route('/users/:userId/unfav')
+    .post(userCtrl.doUnfav);
+
 apiRoutes.route('/travels/:travelId/comment')
     .post(travelCtrl.addComment);
 

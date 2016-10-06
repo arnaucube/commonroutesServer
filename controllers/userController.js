@@ -86,6 +86,48 @@ exports.addUser = function(req, res) {
 	});
 };
 
+/* fav */
+exports.addFav = function(req, res) {
+	userModel.findById(req.params.userId, function(err, user){
+		var fav = {
+			userId: req.body.userId,
+			username: req.body.username,
+			avatar: req.body.avatar
+		};
+		user.favs.push(fav);
+
+		user.save(function(err, user) {
+			if(err) return res.send(500, err.message);
+	    //res.status(200).jsonp(travel);
+			userModel.find(function(err, users) {
+			    if(err) res.send(500, err.message);
+					res.status(200).jsonp(users);
+			});
+		});
+	});
+};
+exports.doUnfav = function(req, res) {
+
+	userModel.findById(req.params.userId, function(err, user){
+		for(var i=0; i<user.favs.length; i++)
+		{
+			if(user.favs[i].username==req.body.username)
+			{
+				user.favs.splice(i, 1);
+			}
+		}
+
+		user.save(function(err, travel) {
+			if(err) return res.send(500, err.message);
+			//res.status(200).jsonp(travel);
+			userModel.find(function(err, users) {
+			    if(err) res.send(500, err.message);
+					res.status(200).jsonp(users);
+			});
+		});
+	});
+};
+
 //PUT - Update a user already exists
 exports.updateUser = function(req, res) {
 	userModel.findById(req.params.id, function(err, user) {
@@ -145,12 +187,14 @@ exports.login = function(req, res) {
         });
 console.log(user);
         // return the information including token as JSON
+				user.password="";
         res.json({
           success: true,
           message: 'Enjoy your token!',
           token: token,
 		  avatar: user.avatar,
-		  userid: user._id
+		  userid: user._id,
+			userdata: user
         });
       }
 
