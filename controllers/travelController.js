@@ -71,8 +71,14 @@ exports.addTravel = function(req, res) {
 
 	travel.save(function(err, travel) {
 		if(err) return res.send(500, err.message);
-    res.status(200).jsonp(travel);
+    //res.status(200).jsonp(travel);
+		travelModel.find(function(err, travels) {
+		    if(err) res.send(500, err.message);
+
+			res.status(200).jsonp(travels);
+		});
 	});
+
 };
 
 //PUT
@@ -119,7 +125,11 @@ exports.addJoin = function(req, res) {
 
 		travel.save(function(err, travel) {
 			if(err) return res.send(500, err.message);
-	    res.status(200).jsonp(travel);
+	    //res.status(200).jsonp(travel);
+			travelModel.find(function(err, travels) {
+			    if(err) res.send(500, err.message);
+					res.status(200).jsonp(travels);
+			});
 		});
 	});
 };
@@ -152,7 +162,11 @@ exports.doUnjoin = function(req, res) {
 
 		travel.save(function(err, travel) {
 			if(err) return res.send(500, err.message);
-			res.status(200).jsonp(travel);
+			//res.status(200).jsonp(travel);
+			travelModel.find(function(err, travels) {
+			    if(err) res.send(500, err.message);
+					res.status(200).jsonp(travels);
+			});
 		});
 	});
 };

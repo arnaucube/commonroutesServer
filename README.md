@@ -39,6 +39,9 @@ frontend app code: https://github.com/idoctnef/collectivecarApp
 -comment publication(car, travel, package)                          --> done
 -valorating users system
 
+-passed dates not shown from server
+-don't allow to add travels with passed date
+
 -GUI admin page
 
 -UX design
