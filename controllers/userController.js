@@ -89,21 +89,41 @@ exports.addUser = function(req, res) {
 /* fav */
 exports.addFav = function(req, res) {
 	userModel.findById(req.params.userId, function(err, user){
-		var fav = {
-			userId: req.body.userId,
-			username: req.body.username,
-			avatar: req.body.avatar
-		};
-		user.favs.push(fav);
 
-		user.save(function(err, user) {
-			if(err) return res.send(500, err.message);
-	    //res.status(200).jsonp(travel);
+		// first search if user have already said like
+		var favRepeated=false;
+		for(var i=0; i<user.favs.length; i++)
+		{
+			if(user.favs[i].username==req.body.username)
+			{
+				favRepeated=true;
+			}
+		}
+		console.log("favRepeated: " + favRepeated);
+		if(favRepeated==false)
+		{
+			var fav = {
+				userId: req.body.userId,
+				username: req.body.username,
+				avatar: req.body.avatar
+			};
+			user.favs.push(fav);
+
+			user.save(function(err, user) {
+				if(err) return res.send(500, err.message);
+		    //res.status(200).jsonp(travel);
+				userModel.find(function(err, users) {
+				    if(err) res.send(500, err.message);
+						res.status(200).jsonp(users);
+				});
+			});
+		}else{
 			userModel.find(function(err, users) {
-			    if(err) res.send(500, err.message);
+					if(err) res.send(500, err.message);
 					res.status(200).jsonp(users);
 			});
-		});
+		}
+
 	});
 };
 exports.doUnfav = function(req, res) {

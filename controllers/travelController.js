@@ -9,8 +9,8 @@ var commentModel  = mongoose.model('commentModel');
 
 //GET
 exports.findAllTravels = function(req, res) {
-
-	travelModel.find(function(err, travels) {
+	//get travels with futures dates ($gte - greater than and equal than)
+	travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
 	    if(err) res.send(500, err.message);
 
 		res.status(200).jsonp(travels);
@@ -104,8 +104,11 @@ exports.deleteTravel = function(req, res) {
 	travelModel.findById(req.params.id, function(err, travel) {
 		travel.remove(function(err) {
 			if(err) return res.send(500, err.message);
-      		res.status(200).jsonp(req.params.id);
-		    console.log('DELETE /traves/' + req.params.id);
+
+			travelModel.find(function(err, travels) {
+					if(err) res.send(500, err.message);
+					res.status(200).jsonp(travels);
+			});
 		})
 	});
 };

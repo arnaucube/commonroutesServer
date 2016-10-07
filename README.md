@@ -37,10 +37,12 @@ frontend app code: https://github.com/idoctnef/collectivecarApp
 -user unoffer car to a travel                                       --> done
 -user unoffer car to a askingpackage                                --> done
 -comment publication(car, travel, package)                          --> done
--valorating users system
+-valorating users system                                            --> done
 
--passed dates not shown from server
--don't allow to add travels with passed date
+-passed dates not shown from server                                 --> done
+-don't allow to add travels with passed date (on frontend and backend)
+
+-acabar de fer robust quan esborres un travel
 
 -GUI admin page
 
@@ -51,6 +53,9 @@ frontend app code: https://github.com/idoctnef/collectivecarApp
 
 -web page (webapp) --> (de moment es pot penjar la app en versió web tal qual,
   que es podrà fer servir des d'un navegador com si fós la app)
+
+-es veu el telèfon dels users?
+-com evitem q algú xungu es registri a la app i vegi els viatges i info dels users?
 ```
 
 
