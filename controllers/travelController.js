@@ -72,7 +72,7 @@ exports.addTravel = function(req, res) {
 	travel.save(function(err, travel) {
 		if(err) return res.send(500, err.message);
     //res.status(200).jsonp(travel);
-		travelModel.find(function(err, travels) {
+		travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
 		    if(err) res.send(500, err.message);
 
 			res.status(200).jsonp(travels);
@@ -105,7 +105,7 @@ exports.deleteTravel = function(req, res) {
 		travel.remove(function(err) {
 			if(err) return res.send(500, err.message);
 
-			travelModel.find(function(err, travels) {
+			travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
 					if(err) res.send(500, err.message);
 					res.status(200).jsonp(travels);
 			});
@@ -129,7 +129,7 @@ exports.addJoin = function(req, res) {
 		travel.save(function(err, travel) {
 			if(err) return res.send(500, err.message);
 	    //res.status(200).jsonp(travel);
-			travelModel.find(function(err, travels) {
+			travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
 			    if(err) res.send(500, err.message);
 					res.status(200).jsonp(travels);
 			});
@@ -151,7 +151,7 @@ exports.doUnjoin = function(req, res) {
 		travel.save(function(err, travel) {
 			if(err) return res.send(500, err.message);
 			//res.status(200).jsonp(travel);
-			travelModel.find(function(err, travels) {
+			travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
 			    if(err) res.send(500, err.message);
 					res.status(200).jsonp(travels);
 			});
@@ -206,7 +206,7 @@ exports.addComment = function(req, res) {
 		travel.save(function(err, travel) {
 			if(err) return res.send(500, err.message);
 	    //res.status(200).jsonp(travel);
-			travelModel.find(function(err, travels) {
+			travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
 			    if(err) res.send(500, err.message);
 					res.status(200).jsonp(travels);
 			});
