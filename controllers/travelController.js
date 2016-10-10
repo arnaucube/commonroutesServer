@@ -31,7 +31,8 @@ exports.findById = function(req, res) {
 
 exports.findAllTravelsFromUsername = function(req, res) {
     travelModel.find({
-      owner: req.params.username
+      owner: req.params.username,
+			date: {$gte: new Date()}
   }, function(err, travels) {
 
       if (err) throw err;
