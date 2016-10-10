@@ -69,6 +69,28 @@ exports.addTravel = function(req, res) {
 		collectivized: req.body.collectivized,
 		modality: req.body.modality
 	});
+	if(travel.title==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}else if(travel.description==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}else if(travel.from==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}else if(travel.to==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}else if(travel.date==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}else if(travel.seats==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}else if(travel.title==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}
 
 	travel.save(function(err, travel) {
 		if(err) return res.send(500, err.message);

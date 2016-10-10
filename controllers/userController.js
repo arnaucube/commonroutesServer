@@ -79,7 +79,23 @@ exports.addUser = function(req, res) {
 		phone: req.body.phone,
 		telegram: req.body.telegram
 	});
-
+	if(user.username==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}else if(user.password==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}else if(user.description==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}else if(user.avatar==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}else if(user.mail==undefined)
+	{
+		return res.status(500).jsonp("empty inputs");
+	}
+	
 	user.save(function(err, user) {
 		if(err) return res.send(500, err.message);
     res.status(200).jsonp(user);
