@@ -21,6 +21,7 @@ exports.findAllUsers = function(req, res) {
 	for(var i=0; i<users.length; i++)
 	{
 		users[i].password="";
+		users[i].token="";
 		console.log(users[i].password);
 	}
 
@@ -38,6 +39,7 @@ exports.findById = function(req, res) {
 	//password deletion
 	if(user!=null){
 		user.password="";
+		users.token="";
 	}
 		res.status(200).jsonp(user);
 	});
@@ -56,6 +58,7 @@ exports.findUserByUsername = function(req, res) {
           // return the information including token as JSON
           //res.jsonp(user);
 		  user.password="";
+			users.token="";
           console.log(user);
 	  		res.status(200).jsonp(user[0]);
 
@@ -95,7 +98,7 @@ exports.addUser = function(req, res) {
 	{
 		return res.status(500).jsonp("empty inputs");
 	}
-	
+
 	user.save(function(err, user) {
 		if(err) return res.send(500, err.message);
     res.status(200).jsonp(user);
@@ -104,13 +107,19 @@ exports.addUser = function(req, res) {
 
 /* fav */
 exports.addFav = function(req, res) {
+	var tokenuser;
+	userModel.find({
+		token: req.headers['x-access-token']
+	}, function(err, users){
+		tokenuser=users[0];
+	});
 	userModel.findById(req.params.userId, function(err, user){
 
 		// first search if user have already said like
 		var favRepeated=false;
 		for(var i=0; i<user.favs.length; i++)
 		{
-			if(user.favs[i].username==req.body.username)
+			if(user.favs[i].username==tokenuser.username)
 			{
 				favRepeated=true;
 			}
@@ -119,9 +128,9 @@ exports.addFav = function(req, res) {
 		if(favRepeated==false)
 		{
 			var fav = {
-				userId: req.body.userId,
-				username: req.body.username,
-				avatar: req.body.avatar
+				userId: tokenuser._id,
+				username: tokenuser.username,
+				avatar: tokenuser.avatar
 			};
 			user.favs.push(fav);
 
@@ -143,11 +152,17 @@ exports.addFav = function(req, res) {
 	});
 };
 exports.doUnfav = function(req, res) {
+	var tokenuser;
+	userModel.find({
+		token: req.headers['x-access-token']
+	}, function(err, users){
+		tokenuser=users[0];
+	});
 
 	userModel.findById(req.params.userId, function(err, user){
 		for(var i=0; i<user.favs.length; i++)
 		{
-			if(user.favs[i].username==req.body.username)
+			if(user.favs[i].username==tokenuser.username)
 			{
 				user.favs.splice(i, 1);
 			}
@@ -178,6 +193,7 @@ exports.updateUser = function(req, res) {
 		user.save(function(err) {
 			if(err) return res.send(500, err.message);
 			user.password="";
+			users.token="";
       	res.status(200).jsonp(user);
 		});
 	});
@@ -221,17 +237,23 @@ exports.login = function(req, res) {
           //expiresInMinutes: 1440 // expires in 24 hours
 		  //expiresIn: '60m'
         });
-console.log(user);
-        // return the information including token as JSON
-				user.password="";
-        res.json({
-          success: true,
-          message: 'Enjoy your token!',
-          token: token,
-		  avatar: user.avatar,
-		  userid: user._id,
-			userdata: user
-        });
+				user.token=token;
+				user.save(function(err, user) {
+					if(err) return res.send(500, err.message);
+					//res.status(200).jsonp(travel);
+					console.log(user);
+	        // return the information including token as JSON
+					user.password="";
+	        res.json({
+	          success: true,
+	          message: 'Enjoy your token!',
+	          token: token,
+					  avatar: user.avatar,
+					  userid: user._id,
+						userdata: user
+	        });
+				});
+
       }
 
     }

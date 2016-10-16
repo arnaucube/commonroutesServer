@@ -52,55 +52,59 @@ exports.findAllTravelsFromUsername = function(req, res) {
 
 exports.addTravel = function(req, res) {
 	console.log('POST new travel, title: ' + req.body.title);
-	var travel = new travelModel({
-		title: req.body.title,
-	    description:   req.body.description,
-	    owner:   req.body.owner,
-	    from:   req.body.from,
-	    to:   req.body.to,
-	    date:   req.body.date,
-		periodic: req.body.periodic,
-	    generateddate:   req.body.generateddate,
-		seats: req.body.seats,
-		package: req.body.package,
-		icon: req.body.icon,
-		phone: req.body.phone,
-		telegram: req.body.telegram,
-		collectivized: req.body.collectivized,
-		modality: req.body.modality
-	});
-	if(travel.title==undefined)
-	{
-		return res.status(500).jsonp("empty inputs");
-	}else if(travel.description==undefined)
-	{
-		return res.status(500).jsonp("empty inputs");
-	}else if(travel.from==undefined)
-	{
-		return res.status(500).jsonp("empty inputs");
-	}else if(travel.to==undefined)
-	{
-		return res.status(500).jsonp("empty inputs");
-	}else if(travel.date==undefined)
-	{
-		return res.status(500).jsonp("empty inputs");
-	}else if(travel.seats==undefined)
-	{
-		return res.status(500).jsonp("empty inputs");
-	}else if(travel.title==undefined)
-	{
-		return res.status(500).jsonp("empty inputs");
-	}
+	userModel.find({
+		token: req.headers['x-access-token']
+	}, function(err, users){
+		var user=users[0];
 
-	travel.save(function(err, travel) {
-		if(err) return res.send(500, err.message);
-    //res.status(200).jsonp(travel);
-		travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
-		    if(err) res.send(500, err.message);
-
-			res.status(200).jsonp(travels);
+		var travel = new travelModel({
+			title: req.body.title,
+		    description:   req.body.description,
+		    owner:   user.username,
+		    from:   req.body.from,
+		    to:   req.body.to,
+		    date:   req.body.date,
+			periodic: req.body.periodic,
+		    generateddate:   req.body.generateddate,
+			seats: req.body.seats,
+			package: req.body.package,
+			icon: req.body.icon,
+			phone: user.phone,
+			telegram: user.telegram,
+			collectivized: req.body.collectivized,
+			modality: req.body.modality
 		});
-	});
+		if(travel.title==undefined)
+		{
+			return res.status(500).jsonp("empty inputs");
+		}else if(travel.description==undefined)
+		{
+			return res.status(500).jsonp("empty inputs");
+		}else if(travel.from==undefined)
+		{
+			return res.status(500).jsonp("empty inputs");
+		}else if(travel.to==undefined)
+		{
+			return res.status(500).jsonp("empty inputs");
+		}else if(travel.date==undefined)
+		{
+			return res.status(500).jsonp("empty inputs");
+		}else if(travel.title==undefined)
+		{
+			return res.status(500).jsonp("empty inputs");
+		}
+
+		travel.save(function(err, travel) {
+			if(err) return res.send(500, err.message);
+	    //res.status(200).jsonp(travel);
+			travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
+			    if(err) res.send(500, err.message);
+
+				res.status(200).jsonp(travels);
+			});
+		});//end of travel.save
+	});//end of usermodel.find
+
 
 };
 
@@ -124,59 +128,79 @@ exports.updateTravel = function(req, res) {
 
 //DELETE
 exports.deleteTravel = function(req, res) {
-	travelModel.findById(req.params.id, function(err, travel) {
-		travel.remove(function(err) {
-			if(err) return res.send(500, err.message);
+	userModel.find({
+		token: req.headers['x-access-token']
+	}, function(err, users){
+		var user=users[0];
 
-			travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
-					if(err) res.send(500, err.message);
-					res.status(200).jsonp(travels);
-			});
-		})
+		travelModel.findById(req.params.id, function(err, travel) {
+			if(travel.owner==user.username)
+			{
+				travel.remove(function(err) {
+					if(err) return res.send(500, err.message);
+
+					travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
+							if(err) res.send(500, err.message);
+							res.status(200).jsonp(travels);
+					});
+				});
+			}
+		});
 	});
 };
 
 
 /* join */
 exports.addJoin = function(req, res) {
-	travelModel.findById(req.params.travelId, function(err, travel){
-		console.log(travel.title);
-		var join = {
-			joinedUserId: req.body.joinedUserId,
-			joinedUsername: req.body.joinedUsername,
-			acceptedUserId: req.body.acceptedUserId,
-			joinedAvatar: req.body.joinedAvatar
-		};
-		travel.joins.push(join);
+	userModel.find({
+		token: req.headers['x-access-token']
+	}, function(err, users){
+		var user=users[0];
 
-		travel.save(function(err, travel) {
-			if(err) return res.send(500, err.message);
-	    //res.status(200).jsonp(travel);
-			travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
-			    if(err) res.send(500, err.message);
-					res.status(200).jsonp(travels);
+		travelModel.findById(req.params.travelId, function(err, travel){
+			console.log(travel.title);
+			var join = {
+				joinedUserId: user._id,
+				joinedUsername: user.username,
+				acceptedUserId: req.body.acceptedUserId,
+				joinedAvatar: user.avatar
+			};
+			travel.joins.push(join);
+
+			travel.save(function(err, travel) {
+				if(err) return res.send(500, err.message);
+		    //res.status(200).jsonp(travel);
+				travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
+				    if(err) res.send(500, err.message);
+						res.status(200).jsonp(travels);
+				});
 			});
 		});
 	});
 };
 
 exports.doUnjoin = function(req, res) {
+	userModel.find({
+		token: req.headers['x-access-token']
+	}, function(err, users){
+		var user=users[0];
 
-	travelModel.findById(req.params.travelId, function(err, travel){
-		for(var i=0; i<travel.joins.length; i++)
-		{
-			if(travel.joins[i].joinedUsername==req.body.joinedUsername)
+		travelModel.findById(req.params.travelId, function(err, travel){
+			for(var i=0; i<travel.joins.length; i++)
 			{
-				travel.joins.splice(i, 1);
+				if(travel.joins[i].joinedUsername==user.username)
+				{
+					travel.joins.splice(i, 1);
+				}
 			}
-		}
 
-		travel.save(function(err, travel) {
-			if(err) return res.send(500, err.message);
-			//res.status(200).jsonp(travel);
-			travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
-			    if(err) res.send(500, err.message);
-					res.status(200).jsonp(travels);
+			travel.save(function(err, travel) {
+				if(err) return res.send(500, err.message);
+				//res.status(200).jsonp(travel);
+				travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
+				    if(err) res.send(500, err.message);
+						res.status(200).jsonp(travels);
+				});
 			});
 		});
 	});
@@ -215,26 +239,31 @@ exports.addComment = function(req, res) {
 		if(err) return res.send(500, err.message);
     res.status(200).jsonp(comment);
 	});*/
+	userModel.find({
+		token: req.headers['x-access-token']
+	}, function(err, users){
+		var user=users[0];
 
-	travelModel.findById(req.params.travelId, function(err, travel){
-		console.log(travel.title);
-		var comment = {
-			commentUserId: req.body.commentUserId,
-			commentUsername: req.body.commentUsername,
-			comment: req.body.comment,
-			commentAvatar: req.body.commentAvatar
-		};
-		travel.comments.push(comment);
+		travelModel.findById(req.params.travelId, function(err, travel){
+			console.log(travel.title);
+			var comment = {
+				commentUserId: user._id,
+				commentUsername: user.username,
+				comment: req.body.comment,
+				commentAvatar: user.avatar
+			};
+			travel.comments.push(comment);
 
-		travel.save(function(err, travel) {
-			if(err) return res.send(500, err.message);
-	    //res.status(200).jsonp(travel);
-			travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
-			    if(err) res.send(500, err.message);
-					res.status(200).jsonp(travels);
+			travel.save(function(err, travel) {
+				if(err) return res.send(500, err.message);
+		    //res.status(200).jsonp(travel);
+				travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
+				    if(err) res.send(500, err.message);
+						res.status(200).jsonp(travels);
+				});
 			});
 		});
-	});
+	});//end of userModel.find
 };
 
 exports.getCommentsByTravelId = function(req, res) {
