@@ -56,6 +56,12 @@ frontend app code: https://github.com/idoctnef/collectivecarApp
 
 -es veu el telèfon dels users?
 -com evitem q algú xungu es registri a la app i vegi els viatges i info dels users?
+
+
+-falta acabar notification system
+  quan mires les notificacions, que avisi al server q ja les has vist, i que el server les marqui com a llegides
+  link a les notificacions
+  acabar de mirar q a la app, quan agafa els users del server, tingui actualitzades les notificacions del user al menu
 ```
 
 

@@ -167,6 +167,8 @@ exports.addJoin = function(req, res) {
 			};
 			travel.joins.push(join);
 
+
+
 			travel.save(function(err, travel) {
 				if(err) return res.send(500, err.message);
 		    //res.status(200).jsonp(travel);
@@ -175,7 +177,28 @@ exports.addJoin = function(req, res) {
 						res.status(200).jsonp(travels);
 				});
 			});
+
+			//start saving notification, get user owner of travel
+			userModel.find({
+		      username: travel.owner
+		  }, function(err, userowners) {
+				var userowner=userowners[0];
+				//notification
+				var notification = {
+					type: "join",
+					otherusername: user.username,
+					description: "user "+user.username+" joins your travel "+travel.title,
+					date: new Date(),
+					link: ""
+				};
+				userowner.notifications.push(notification);
+				userowner.save(function(err, userowner) {
+					console.log("notification saved");
+				});
+			});//end saving notification
+
 		});
+
 	});
 };
 
@@ -202,6 +225,7 @@ exports.doUnjoin = function(req, res) {
 						res.status(200).jsonp(travels);
 				});
 			});
+
 		});
 	});
 };
@@ -262,6 +286,26 @@ exports.addComment = function(req, res) {
 						res.status(200).jsonp(travels);
 				});
 			});
+
+			//start saving notification, get user owner of travel
+			userModel.find({
+		      username: travel.owner
+		  }, function(err, userowners) {
+				var userowner=userowners[0];
+				//notification
+				var notification = {
+					type: "comment",
+					otherusername: user.username,
+					description: "user "+user.username+" comments your travel "+travel.title,
+					date: new Date(),
+					link: ""
+				};
+				userowner.notifications.push(notification);
+				userowner.save(function(err, userowner) {
+					console.log("notification saved");
+				});
+			});//end saving notification
+
 		});
 	});//end of userModel.find
 };

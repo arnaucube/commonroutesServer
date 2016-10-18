@@ -22,6 +22,13 @@ var userSchema = new Schema({
       username: { type: String },
       userId: { type: String },
       avatar: { type: String }
+    }],
+    notifications: [{
+      type: { type: String },//fav, comment, join
+      otherusername: { type: String },
+      description: { type: String },
+      date: { type: Date },
+      link: { type: String }
     }]
 })
 

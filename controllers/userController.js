@@ -127,6 +127,7 @@ exports.addFav = function(req, res) {
 		console.log("favRepeated: " + favRepeated);
 		if(favRepeated==false)
 		{
+			//fav
 			var fav = {
 				userId: tokenuser._id,
 				username: tokenuser.username,
@@ -134,9 +135,21 @@ exports.addFav = function(req, res) {
 			};
 			user.favs.push(fav);
 
+			//notification
+			var notification = {
+				type: "fav",
+				otherusername: tokenuser.username,
+				description: "user "+tokenuser.username+" favs you",
+				date: new Date(),
+				link: ""
+			};
+			user.notifications.push(notification);
+
 			user.save(function(err, user) {
 				if(err) return res.send(500, err.message);
-		    //res.status(200).jsonp(travel);
+
+
+				//once saved, send the users json to client
 				userModel.find(function(err, users) {
 				    if(err) res.send(500, err.message);
 						res.status(200).jsonp(users);
