@@ -10,6 +10,8 @@ var express         = require("express");
 var app             = express();
 var config = require('../config'); // get our config file
 app.set('superSecret', config.secret); // secret variable
+
+var crypto = require('crypto');
 /* */
 
 //GET - Return all Users in the DB
@@ -75,7 +77,7 @@ exports.addUser = function(req, res) {
 
 	var user = new userModel({
 		username: req.body.username,
-		password: md5(req.body.password),
+		password: crypto.createHash('sha256').update(req.body.password).digest('base64'),
 	    description:   req.body.description,
 	    avatar:   req.body.avatar,
 	    mail:   req.body.mail,
@@ -237,7 +239,7 @@ exports.login = function(req, res) {
       res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
 
-			req.body.password=md5(req.body.password);
+			req.body.password=crypto.createHash('sha256').update(req.body.password).digest('base64');
 
       // check if password matches
       if (user.password != req.body.password) {
