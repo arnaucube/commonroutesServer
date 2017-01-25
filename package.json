@@ -2,8 +2,17 @@
   "name": "comunalCar",
   "version": "0.0.1",
   "description": "comunalCar, carsharing",
+  "repository": "https://github.com/arnaucode/carsincommonServer",
+  "contributors": [
+    {
+      "name": "Arnau",
+      "email": "idoctnef@openmailbox.org",
+      "web": "arnaucode.com"
+    }
+  ],
   "main": "server.js",
   "scripts": {
+    "prestart": "npm install",
     "start": "node server.js"
   },
   "dependencies": {
@@ -13,7 +22,6 @@
     "method-override": "^2.1.2",
     "mongoose": "latest",
     "morgan": "latest",
-    "md5": "latest",
     "mongoose-unique-validator": "^1.0.2"
   }
 }
