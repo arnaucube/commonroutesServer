@@ -3,11 +3,10 @@ var mongoose = require('mongoose'),
 
 
 var commentSchema = new Schema({
-    travelId: { type: String },
-    commentUserId: { type: String },
-    commentUsername: { type: String },
     comment: { type: String },
-    commentAvatar: { type: String }
-
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userModel'
+    }
 });
 module.exports = mongoose.model('commentModel', commentSchema);

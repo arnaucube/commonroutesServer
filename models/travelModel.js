@@ -3,32 +3,28 @@ var mongoose = require('mongoose'),
 
 
 var travelSchema = new Schema({
-    title: { type: String },
+    title: { type: String, required: true },
     description: { type: String },
-    owner:   { type: String },
-    from: { type: String },
-    to: { type: String },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userModel'
+    },
+    from: { type: String, required: true },
+    to: { type: String, required: true },
     date: { type: Date },
     periodic: { type: Boolean },
     generateddate: { type: Date },
-    seats: { type: Number },
+    seats: { type: Number, required: true },
     package: { type: Boolean },
-    icon: { type: String },
-    phone: { type: Number },
-    telegram: { type: String },
     collectivized: { type: Boolean },
-    modality: { type: String }, //if is an offering travel or asking for travel
+    type: { type: String }, //if is an offering travel or asking for travel
     joins: [{
-      joinedUserId: { type: String },
-      joinedUsername: { type: String },
-      acceptedUserId: { type: String },
-      joinedAvatar: { type: String }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userModel'
     }],
     comments: [{
-      commentUserId: { type: String },
-      commentUsername: { type: String },
-      comment: { type: String },
-      commentAvatar: { type: String }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'commentModel'
     }]
 })
 module.exports = mongoose.model('travelModel', travelSchema);

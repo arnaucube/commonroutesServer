@@ -14,16 +14,14 @@ var crypto = require('crypto');
 /* */
 
 //POST - Insert a new User in the DB
-exports.addUser = function(req, res) {
-    console.log('POST new user, name: ' + req.body.username);
-    //console.log(req.body);
+exports.signup = function(req, res) {
 
     var user = new userModel({
         username: req.body.username,
         password: crypto.createHash('sha256').update(req.body.password).digest('base64'),
         description: req.body.description,
         avatar: req.body.avatar,
-        mail: req.body.mail,
+        email: req.body.email,
         phone: req.body.phone,
         telegram: req.body.telegram
     });
@@ -31,7 +29,7 @@ exports.addUser = function(req, res) {
         return res.status(500).jsonp("empty inputs");
     } else if (user.password == undefined) {
         return res.status(500).jsonp("empty inputs");
-    } else if (user.mail == undefined) {
+    } else if (user.email == undefined) {
         return res.status(500).jsonp("empty inputs");
     }
 
@@ -71,7 +69,7 @@ exports.login = function(req, res) {
 
                 // if user is found and password is right
                 // create a token
-                var token = jwt.sign(user, app.get('superSecret'), {
+                var token = jwt.sign({foo: 'bar'}, app.get('superSecret'), {
                     //expiresInMinutes: 1440 // expires in 24 hours
                     //expiresIn: '60m'
                 });
@@ -98,65 +96,62 @@ exports.login = function(req, res) {
 };
 
 //GET - Return all Users in the DB
-exports.findAllUsers = function(req, res) {
-    userModel.find(function(err, users) {
-        if (err) res.send(500, err.message);
-
-        //password deletion
-        for (var i = 0; i < users.length; i++) {
-            users[i].password = "";
-            users[i].token = "";
-            console.log(users[i].password);
-        }
-
-        console.log('GET /users');
-        res.status(200).jsonp(users);
-    });
+exports.getAllUsers = function(req, res) {
+    userModel.find()
+        .limit(Number(req.query.pageSize))
+        .skip(Number(req.query.pageSize) * Number(req.query.page))
+        .exec(function (err, users) {
+            if (err) return res.send(500, err.message);
+            res.status(200).jsonp(users);
+        });
 };
 
 //GET - Return a User with specified ID
-exports.findById = function(req, res) {
-    userModel.findById(req.params.id, function(err, user) {
+exports.getUserById = function (req, res) {
+    userModel.findOne({_id: req.params.userid})
+    .lean()
+    .populate('travels', 'title from to date')
+    .exec(function (err, user) {
         if (err) return res.send(500, err.message);
-
-        console.log('GET /users/' + req.params.id);
-        //password deletion
-        if (user != null) {
-            user.password = "";
-            users.token = "";
-        }
-        res.status(200).jsonp(user);
-    });
-};
-
-exports.findUserByUsername = function(req, res) {
-    userModel.find({
-        username: req.params.username
-    }, function(err, user) {
-
-        if (err) throw err;
-
         if (!user) {
-            res.json({
-                success: false,
-                message: 'no user found'
-            });
+            res.json({success: false, message: 'User not found.'});
         } else if (user) {
-            // return the information including token as JSON
-            //res.jsonp(user);
-            user.password = "";
-            users.token = "";
-            console.log(user);
-            res.status(200).jsonp(user[0]);
 
-
+            res.status(200).jsonp(user);
         }
-
     });
 };
 
+exports.updateUser = function (req, res) {
+    userModel.update({'token': req.headers['x-access-token']}, req.body,
+        function (err) {
+            if (err) return console.log(err);
+            console.log(user);
+            userModel.findOne({_id: user._id})
+            .lean()
+            .populate('travels', 'title from to date')
+            .exec(function (err, user) {
+                if (err) return res.send(500, err.message);
+                if (!user) {
+                    res.json({success: false, message: 'User not found.'});
+                } else if (user) {
 
+                    res.status(200).jsonp(user);
+                }
+            });
+        });
+};
 
+//DELETE - Delete a user with specified ID
+exports.deleteUser = function(req, res) {
+    userModel.findOne({'token': req.headers['x-access-token']})
+    .exec(function(err, user) {
+        user.remove(function(err) {
+            if (err) return res.send(500, err.message);
+            res.status(200).jsonp("deleted");
+        })
+    });
+};
 /* fav */
 exports.addFav = function(req, res) {
     var tokenuser;
@@ -236,36 +231,5 @@ exports.doUnfav = function(req, res) {
                 res.status(200).jsonp(users);
             });
         });
-    });
-};
-
-//PUT - Update a user already exists
-exports.updateUser = function(req, res) {
-    userModel.findById(req.params.id, function(err, user) {
-        user.username = req.body.username;
-        user.password = md5(req.body.password);
-        user.description = req.body.description;
-        user.avatar = req.body.avatar;
-        user.mail = req.body.mail;
-        user.phone = req.body.phone;
-        user.telegram = req.body.telegram;
-
-        user.save(function(err) {
-            if (err) return res.send(500, err.message);
-            user.password = "";
-            users.token = "";
-            res.status(200).jsonp(user);
-        });
-    });
-};
-
-//DELETE - Delete a user with specified ID
-exports.deleteUser = function(req, res) {
-    userModel.findById(req.params.id, function(err, user) {
-        user.remove(function(err) {
-            if (err) return res.send(500, err.message);
-            res.status(200).jsonp(req.params.id);
-            console.log('DELETE /users/' + req.params.id);
-        })
     });
 };

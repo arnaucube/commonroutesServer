@@ -1,129 +1,93 @@
 //File: controllers/travelController.js
 var mongoose = require('mongoose');
-var travelModel  = mongoose.model('travelModel');
-
 var userModel  = mongoose.model('userModel');
-
-var joinModel  = mongoose.model('joinModel');
+var travelModel  = mongoose.model('travelModel');
 var commentModel  = mongoose.model('commentModel');
 
 //GET
-exports.findAllTravels = function(req, res) {
+exports.getAllTravels = function(req, res) {
 	//get travels with futures dates ($gte - greater than and equal than)
-	travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
-	    if(err) res.send(500, err.message);
-
-		res.status(200).jsonp(travels);
-	});
-
-
+	travelModel.find({date: {$gte: new Date()}})
+        .limit(Number(req.query.pageSize))
+        .skip(Number(req.query.pageSize) * Number(req.query.page))
+        .exec(function (err, travels) {
+            if (err) return res.send(500, err.message);
+            res.status(200).jsonp(travels);
+        });
 };
 
-//GET
-exports.findById = function(req, res) {
-	travelModel.findById(req.params.id, function(err, travel) {
-    if(err) return res.send(500, err.message);
+exports.getTravelById = function (req, res) {
+    travelModel.findOne({_id: req.params.travelid})
+        .lean()
+        .populate('joins', 'username avatar')
+        .populate('comments', 'comment user')
+        .exec(function (err, travel) {
+            if (err) return res.send(500, err.message);
+            if (!travel) {
+                res.json({success: false, message: 'travel not found.'});
+            } else if (travel) {
 
-    console.log('GET /travel/' + req.params.id);
-		res.status(200).jsonp(travel);
-	});
-};
-
-exports.findAllTravelsFromUsername = function(req, res) {
-    travelModel.find({
-      owner: req.params.username,
-			date: {$gte: new Date()}
-  }, function(err, travels) {
-
-      if (err) throw err;
-
-      if (!travels) {
-        res.json({ success: false, message: 'no travels for user' });
-    } else if (travels) {
-        console.log(travels);
-          // return the information including token as JSON
-          res.jsonp(travels);
-
-
-      }
-
-    });
+                res.status(200).jsonp(travel);
+            }
+        });
 };
 
 exports.addTravel = function(req, res) {
-	console.log('POST new travel, title: ' + req.body.title);
-	userModel.find({
-		token: req.headers['x-access-token']
-	}, function(err, users){
-		var user=users[0];
-
-		var travel = new travelModel({
-			title: req.body.title,
-		    description:   req.body.description,
-		    owner:   user.username,
-		    from:   req.body.from,
-		    to:   req.body.to,
-		    date:   req.body.date,
-			periodic: req.body.periodic,
-		    generateddate:   req.body.generateddate,
-			seats: req.body.seats,
-			package: req.body.package,
-			icon: req.body.icon,
-			phone: user.phone,
-			telegram: user.telegram,
-			collectivized: req.body.collectivized,
-			modality: req.body.modality
-		});
-		if(travel.title==undefined)
-		{
-			return res.status(500).jsonp("empty inputs");
-		}else if(travel.description==undefined)
-		{
-			return res.status(500).jsonp("empty inputs");
-		}else if(travel.from==undefined)
-		{
-			return res.status(500).jsonp("empty inputs");
-		}else if(travel.to==undefined)
-		{
-			return res.status(500).jsonp("empty inputs");
-		}else if(travel.date==undefined)
-		{
-			return res.status(500).jsonp("empty inputs");
-		}else if(travel.title==undefined)
-		{
-			return res.status(500).jsonp("empty inputs");
-		}
-
-		travel.save(function(err, travel) {
-			if(err) return res.send(500, err.message);
-	    //res.status(200).jsonp(travel);
-			travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
-			    if(err) res.send(500, err.message);
-
-				res.status(200).jsonp(travels);
+	userModel.findOne({'token': req.headers['x-access-token']})
+	.exec(function(err, user){
+		if (err) return res.send(500, err.message);
+		if (!user) {
+			console.log("user not found");
+            res.json({success: false, message: 'User not found.'});
+        } else if (user) {
+			var travel = new travelModel({
+				title: req.body.title,
+			    description:   req.body.description,
+			    user:   user._id,
+			    from:   req.body.from,
+			    to:   req.body.to,
+			    date:   req.body.date,
+				periodic: req.body.periodic,
+			    generateddate: Date(),
+				seats: req.body.seats,
+				package: req.body.package,
+				collectivized: req.body.collectivized,
+				type: req.body.modality
 			});
-		});//end of travel.save
+
+			travel.save(function(err, travel) {
+				if(err) return res.send(500, err.message);
+
+				user.travels.push(travel._id);
+				user.save(function (err, user) {
+                    if (err) return res.send(500, err.message);
+					exports.getAllTravels(req, res);
+                });
+			});//end of travel.save
+		}
 	});//end of usermodel.find
 
 
 };
 
-//PUT
 exports.updateTravel = function(req, res) {
-	ActivityModel.findById(req.params.id, function(err, tvshow) {
-		tvshow.title   = req.body.petId;
-		tvshow.year    = req.body.year;
-		tvshow.country = req.body.country;
-		tvshow.poster  = req.body.poster;
-		tvshow.seasons = req.body.seasons;
-		tvshow.genre   = req.body.genre;
-		tvshow.summary = req.body.summary;
+	userModel.findOne({'token': req.headers['x-access-token']})
+	.exec(function(err, user){
+        if (err) return console.log(err);
+        console.log(user);
+        userModel.findOne({_id: user._id})
+        .lean()
+        .populate('travels', 'title from to date')
+        .exec(function (err, user) {
+            if (err) return res.send(500, err.message);
+            if (!user) {
+                res.json({success: false, message: 'User not found.'});
+            } else if (user) {
 
-		tvshow.save(function(err) {
-			if(err) return res.send(500, err.message);
-      res.status(200).jsonp(tvshow);
-		});
-	});
+                res.status(200).jsonp(user);
+            }
+        });
+    });
 };
 
 //DELETE
@@ -149,14 +113,10 @@ exports.deleteTravel = function(req, res) {
 	});
 };
 
-
 /* join */
 exports.addJoin = function(req, res) {
-	userModel.find({
-		token: req.headers['x-access-token']
-	}, function(err, users){
-		var user=users[0];
-
+	userModel.findOne({'token': req.headers['x-access-token']})
+	.exec(function(err, user){
 		travelModel.findById(req.params.travelId, function(err, travel){
 			console.log(travel.title);
 			var join = {
@@ -247,6 +207,31 @@ exports.getJoinsByTravelId = function(req, res) {
 
     });
 };
+
+exports.findAllTravelsFromUsername = function(req, res) {
+    travelModel.find({
+      owner: req.params.username,
+			date: {$gte: new Date()}
+  }, function(err, travels) {
+
+      if (err) throw err;
+
+      if (!travels) {
+        res.json({ success: false, message: 'no travels for user' });
+    } else if (travels) {
+        console.log(travels);
+          // return the information including token as JSON
+          res.jsonp(travels);
+
+
+      }
+
+    });
+};
+
+
+
+
 
 
 /* comment */
