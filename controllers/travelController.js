@@ -53,7 +53,7 @@ exports.addTravel = function(req, res) {
 				seats: req.body.seats,
 				package: req.body.package,
 				collectivized: req.body.collectivized,
-				type: req.body.modality
+				type: req.body.type
 			});
 
 			travel.save(function(err, travel) {

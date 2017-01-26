@@ -9,7 +9,7 @@ var userSchema = new Schema({
     password: { type: String, required: true, selected: false },
     token: { type: String, selected: false },
     description:   { type: String, default: "Hello world" },
-    avatar:   { type: String, default: "racoon" },
+    avatar:   { type: String, default: "img/avatars/racoon.png" },
     email:   { type: String, required: true },
     phone: { type: String },
     telegram: { type: String },

@@ -111,7 +111,7 @@ exports.getAllUsers = function(req, res) {
 exports.getUserById = function (req, res) {
     userModel.findOne({_id: req.params.userid})
     .lean()
-    .populate('travels', 'title from to date')
+    .populate('travels', 'title from to date type')
     .exec(function (err, user) {
         if (err) return res.send(500, err.message);
         if (!user) {
