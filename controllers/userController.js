@@ -121,6 +121,21 @@ exports.getUserById = function (req, res) {
         }
     });
 };
+//GET - Return a User with specified ID
+exports.getUserByToken = function (req, res) {
+    userModel.findOne({'token': req.headers['x-access-token']})
+    .lean()
+    .populate('travels', 'title from to date')
+    .exec(function (err, user) {
+        if (err) return res.send(500, err.message);
+        if (!user) {
+            res.json({success: false, message: 'User not found.'});
+        } else if (user) {
+
+            res.status(200).jsonp(user);
+        }
+    });
+};
 
 exports.updateUser = function (req, res) {
     userModel.update({'token': req.headers['x-access-token']}, req.body,

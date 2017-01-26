@@ -22,6 +22,10 @@ var travelSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'userModel'
     }],
+    joinPetitions: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userModel'
+    }],
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'commentModel'

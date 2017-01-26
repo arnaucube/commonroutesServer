@@ -73,18 +73,18 @@ exports.addTravel = function(req, res) {
 exports.updateTravel = function(req, res) {
 	userModel.findOne({'token': req.headers['x-access-token']})
 	.exec(function(err, user){
-        if (err) return console.log(err);
-        console.log(user);
-        userModel.findOne({_id: user._id})
+        if (err) return res.send(500, err.message);
+        console.log(travel);
+        travelModel.findOne({_id: travel._id})
         .lean()
         .populate('travels', 'title from to date')
-        .exec(function (err, user) {
+        .exec(function (err, travel) {
             if (err) return res.send(500, err.message);
-            if (!user) {
-                res.json({success: false, message: 'User not found.'});
-            } else if (user) {
+            if (!travel) {
+                res.json({success: false, message: 'travel not found.'});
+            } else if (travel) {
 
-                res.status(200).jsonp(user);
+                res.status(200).jsonp(travel);
             }
         });
     });
@@ -92,21 +92,18 @@ exports.updateTravel = function(req, res) {
 
 //DELETE
 exports.deleteTravel = function(req, res) {
-	userModel.find({
-		token: req.headers['x-access-token']
-	}, function(err, users){
-		var user=users[0];
-
-		travelModel.findById(req.params.id, function(err, travel) {
-			if(travel.owner==user.username)
+	userModel.findOne({'token': req.headers['x-access-token']})
+	.exec(function(err, user){
+		if (err) return res.send(500, err.message);
+		travelModel.findById(req.params.travelid, function(err, travel) {
+			if (err) return res.send(500, err.message);
+			if(travel.user.equals(user._id))
 			{
 				travel.remove(function(err) {
 					if(err) return res.send(500, err.message);
 
-					travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
-							if(err) res.send(500, err.message);
-							res.status(200).jsonp(travels);
-					});
+					console.log("deleted");
+					exports.getAllTravels(req, res);
 				});
 			}
 		});
@@ -114,79 +111,89 @@ exports.deleteTravel = function(req, res) {
 };
 
 /* join */
-exports.addJoin = function(req, res) {
+exports.addJoinPetition = function(req, res) {
 	userModel.findOne({'token': req.headers['x-access-token']})
-	.exec(function(err, user){
-		travelModel.findById(req.params.travelId, function(err, travel){
-			console.log(travel.title);
-			var join = {
-				joinedUserId: user._id,
-				joinedUsername: user.username,
-				acceptedUserId: req.body.acceptedUserId,
-				joinedAvatar: user.avatar
-			};
-			travel.joins.push(join);
+	.exec(function(err, userJoining){
+		if (err) return res.send(500, err.message);
+		if (!userJoining) {
+            res.json({success: false, message: 'User not found.'});
+        } else if (userJoining) {
+			travelModel.findOne({
+				_id: req.params.travelid,
+				user: {'$ne': userJoining._id},
+				joins: {'$ne': userJoining._id},
+				joinPetitions: {'$ne': userJoining._id}
+			})
+			.exec(function(err, travel){
+				if (err) return res.send(500, err.message);
+				if (!travel) {
+		            res.json({success: false, message: 'travel not found. You can not join a travel if you have created it, or if you have already joined'});
+		        } else if (travel) {
+					travel.joinPetitions.push(userJoining._id);
+					travel.save(function(err, travel) {
+						if(err) return res.send(500, err.message);
 
+						//start saving notification, get user owner of travel
+						userModel.findOne({_id: travel.user})
+						.exec(function(err, user){
+							if (err) return res.send(500, err.message);
+							if (!user) {
+					            res.json({success: false, message: 'User not found.'});
+					        } else if (user) {
+							//notification
+								var notification = {
+									type: "join",
+									message: "user "+userJoining.username+" joins your travel "+travel.title,
+									date: new Date(),
+									icon: 'join.png',
+									link: ""
+								};
+								user.notifications.push(notification);
+								user.save(function(err, user) {
+									if (err) return res.send(500, err.message);
 
-
-			travel.save(function(err, travel) {
-				if(err) return res.send(500, err.message);
-		    //res.status(200).jsonp(travel);
-				travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
-				    if(err) res.send(500, err.message);
-						res.status(200).jsonp(travels);
-				});
+									console.log("notification saved");
+									exports.getTravelById(req, res);
+								});
+							}
+						});//end saving notification
+					});
+				}//end of else if travel
 			});
-
-			//start saving notification, get user owner of travel
-			userModel.find({
-		      username: travel.owner
-		  }, function(err, userowners) {
-				var userowner=userowners[0];
-				//notification
-				var notification = {
-					type: "join",
-					otherusername: user.username,
-					description: "user "+user.username+" joins your travel "+travel.title,
-					date: new Date(),
-					link: ""
-				};
-				userowner.notifications.push(notification);
-				userowner.save(function(err, userowner) {
-					console.log("notification saved");
-				});
-			});//end saving notification
-
-		});
-
+		}//end of else if user
 	});
 };
 
-exports.doUnjoin = function(req, res) {
-	userModel.find({
-		token: req.headers['x-access-token']
-	}, function(err, users){
-		var user=users[0];
-
-		travelModel.findById(req.params.travelId, function(err, travel){
-			for(var i=0; i<travel.joins.length; i++)
-			{
-				if(travel.joins[i].joinedUsername==user.username)
-				{
-					travel.joins.splice(i, 1);
+exports.unJoin = function(req, res) {
+	userModel.findOne({'token': req.headers['x-access-token']})
+	.exec(function(err, user){
+		if (!user) {
+            res.json({success: false, message: 'User not found.'});
+        } else if (user) {
+			travelModel.findOne({
+				_id: req.params.travelid,
+				joinPetitions: user._id
+			})
+			.exec(function(err, travel){
+				if (err) return res.send(500, err.message);
+				if (!travel) {
+		            res.json({success: false, message: 'can not unjoin this travel'});
+		        } else if (travel) {
+					for(var i=0; i<travel.joinPetitions.length; i++)
+					{
+						if(travel.joinPetitions[i].equals(user._id))
+						{
+							travel.joinPetitions.splice(i, 1);
+						}
+					}
+					travel.save(function(err, travel) {
+						if(err) return res.send(500, err.message);
+						exports.getTravelById(req, res);
+					});
 				}
-			}
-
-			travel.save(function(err, travel) {
-				if(err) return res.send(500, err.message);
-				//res.status(200).jsonp(travel);
-				travelModel.find({date: {$gte: new Date()}}, function(err, travels) {
-				    if(err) res.send(500, err.message);
-						res.status(200).jsonp(travels);
-				});
 			});
+		}
 
-		});
 	});
 };
 

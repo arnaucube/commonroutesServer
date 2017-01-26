@@ -106,19 +106,23 @@ apiRoutes.use(function(req, res, next) {
 }); //fi verificació de token
 
 
-apiRoutes.route('/users/:id')
-    .put(userCtrl.updateUser)
+apiRoutes.route('/users/getByToken')
+    .get(userCtrl.getUserByToken);
+apiRoutes.route('/users')//agafa l'user a partir del token
+    .put(userCtrl.updateUser)//no comprovat
     .delete(userCtrl.deleteUser);
 apiRoutes.route('/travels')
     .post(travelCtrl.addTravel);
-//FINS AQUÏ COMPROVAT
-apiRoutes.route('/travels/:id')
-    .put(travelCtrl.updateTravel)
+apiRoutes.route('/travels/modifyById/:travelid')
+    .put(travelCtrl.updateTravel)//no comprovat
     .delete(travelCtrl.deleteTravel);
+apiRoutes.route('/travels/join/:travelid')
+    .get(travelCtrl.addJoinPetition);
+apiRoutes.route('/travels/unjoin/:travelid')
+    .get(travelCtrl.unJoin);
+//FINS AQUÏ COMPROVAT
 
-apiRoutes.route('/travels/addJoin/:travelId')
-    .get(travelCtrl.getJoinsByTravelId);
-apiRoutes.route('/travels/comment/:travelId')
+apiRoutes.route('/travels/comment/:travelid')
     .get(travelCtrl.getCommentsByTravelId);
 
 /*apiRoutes.route('/travels/join/:travelId')
@@ -126,11 +130,11 @@ apiRoutes.route('/travels/comment/:travelId')
 apiRoutes.route('/travels/unjoin/:travelId')
     .post(travelCtrl.doUnjoin);*/
 
-apiRoutes.route('/travels/:travelId/join')
+/*apiRoutes.route('/travels/:travelId/join')
     .post(travelCtrl.addJoin);
 apiRoutes.route('/travels/:travelId/unjoin')
     .post(travelCtrl.doUnjoin);
-
+*/
 apiRoutes.route('/users/:userId/fav')
     .post(userCtrl.addFav);
 apiRoutes.route('/users/:userId/unfav')

@@ -8,8 +8,8 @@ var userSchema = new Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true, selected: false },
     token: { type: String, selected: false },
-    description:   { type: String },
-    avatar:   { type: String },
+    description:   { type: String, default: "Hello world" },
+    avatar:   { type: String, default: "racoon" },
     email:   { type: String, required: true },
     phone: { type: String },
     telegram: { type: String },
@@ -33,7 +33,7 @@ var userSchema = new Schema({
         ref: 'travelModel'
     }],
     notifications: [{
-        state: {type: String},//viewed, pendent
+        state: {type: String, default: "pendent"},//viewed, pendent
         message: {type: String},
         link: {type: String},//aquí oju, a la app i a la web calen links diferents, però ho podem fer posant sempre a la app i a la web el prefix del link (#!/app) o (#/app/), i després afegint-hi la pàgina on volem enviar el routing, per exemple (dashboard)
         icon: {type: String},
