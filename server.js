@@ -61,11 +61,11 @@ apiRoutes.route('/signup')
     .post(userCtrl.signup);
 apiRoutes.route('/users')
     .get(userCtrl.getAllUsers);
-apiRoutes.route('/users/getByUserId/:userid')
+apiRoutes.route('/users/id/:userid')
     .get(userCtrl.getUserById);
 apiRoutes.route('/travels')
     .get(travelCtrl.getAllTravels);
-apiRoutes.route('/travels/getByTravelId/:travelid')
+apiRoutes.route('/travels/id/:travelid')
     .get(travelCtrl.getTravelById);
 
 
@@ -107,21 +107,21 @@ apiRoutes.use(function(req, res, next) {
 }); //fi verificació de token
 
 
-apiRoutes.route('/users/getByToken')
+apiRoutes.route('/users/token')
     .get(userCtrl.getUserByToken);
 apiRoutes.route('/users')//agafa l'user a partir del token
     .put(userCtrl.updateUser)//no comprovat
     .delete(userCtrl.deleteUser);
 apiRoutes.route('/travels')
     .post(travelCtrl.addTravel);
-apiRoutes.route('/travels/modifyById/:travelid')
+apiRoutes.route('/travels/id/modify/:travelid')
     .put(travelCtrl.updateTravel)//no comprovat
     .delete(travelCtrl.deleteTravel);
 apiRoutes.route('/travels/join/:travelid')
     .get(travelCtrl.addJoinPetition);
 apiRoutes.route('/travels/unjoin/:travelid')
     .get(travelCtrl.unJoin);
-apiRoutes.route('/travels/getByUserId/:userid')
+apiRoutes.route('/travels/byuser/id/:userid')
     .get(travelCtrl.getTravelsByUserId);
 //FINS AQUÏ COMPROVAT
 
