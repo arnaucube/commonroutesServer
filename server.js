@@ -29,10 +29,10 @@ app.use(morgan('dev'));
 
 // Import Models and controllers
 var userMdl = require('./models/userModel')(app, mongoose);
-var userCtrl = require('./controllers/userController');
-
+var notificationMdl = require('./models/notificationModel')(app, mongoose);
 var travelMdl = require('./models/travelModel')(app, mongoose);
 var commentMdl = require('./models/commentModel')(app, mongoose);
+var userCtrl = require('./controllers/userController');
 var travelCtrl = require('./controllers/travelController');
 
 /*// Example Route
@@ -61,11 +61,11 @@ apiRoutes.route('/signup')
     .post(userCtrl.signup);
 apiRoutes.route('/users')
     .get(userCtrl.getAllUsers);
-apiRoutes.route('/users/getById/:userid')
+apiRoutes.route('/users/getByUserId/:userid')
     .get(userCtrl.getUserById);
 apiRoutes.route('/travels')
     .get(travelCtrl.getAllTravels);
-apiRoutes.route('/travels/getById/:travelid')
+apiRoutes.route('/travels/getByTravelId/:travelid')
     .get(travelCtrl.getTravelById);
 
 
@@ -120,6 +120,8 @@ apiRoutes.route('/travels/join/:travelid')
     .get(travelCtrl.addJoinPetition);
 apiRoutes.route('/travels/unjoin/:travelid')
     .get(travelCtrl.unJoin);
+apiRoutes.route('/travels/getByUserId/:userid')
+    .get(travelCtrl.getTravelsByUserId);
 //FINS AQUÏ COMPROVAT
 
 apiRoutes.route('/travels/comment/:travelid')

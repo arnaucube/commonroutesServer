@@ -1,6 +1,7 @@
 //File: controllers/userController.js
 var mongoose = require('mongoose');
 var userModel = mongoose.model('userModel');
+var notificationModel  = mongoose.model('notificationModel');
 
 
 /* */

@@ -1,6 +1,7 @@
 //File: controllers/travelController.js
 var mongoose = require('mongoose');
 var userModel  = mongoose.model('userModel');
+var notificationModel  = mongoose.model('notificationModel');
 var travelModel  = mongoose.model('travelModel');
 var commentModel  = mongoose.model('commentModel');
 
@@ -8,28 +9,28 @@ var commentModel  = mongoose.model('commentModel');
 exports.getAllTravels = function(req, res) {
 	//get travels with futures dates ($gte - greater than and equal than)
 	travelModel.find({date: {$gte: new Date()}})
-        .limit(Number(req.query.pageSize))
-        .skip(Number(req.query.pageSize) * Number(req.query.page))
-        .exec(function (err, travels) {
-            if (err) return res.send(500, err.message);
-            res.status(200).jsonp(travels);
-        });
+    .limit(Number(req.query.pageSize))
+    .skip(Number(req.query.pageSize) * Number(req.query.page))
+    .exec(function (err, travels) {
+        if (err) return res.send(500, err.message);
+        res.status(200).jsonp(travels);
+    });
 };
 
 exports.getTravelById = function (req, res) {
     travelModel.findOne({_id: req.params.travelid})
-        .lean()
-        .populate('joins', 'username avatar')
-        .populate('comments', 'comment user')
-        .exec(function (err, travel) {
-            if (err) return res.send(500, err.message);
-            if (!travel) {
-                res.json({success: false, message: 'travel not found.'});
-            } else if (travel) {
+    .lean()
+    .populate('joins', 'username avatar')
+    .populate('comments', 'comment user')
+    .exec(function (err, travel) {
+        if (err) return res.send(500, err.message);
+        if (!travel) {
+            res.json({success: false, message: 'travel not found.'});
+        } else if (travel) {
 
-                res.status(200).jsonp(travel);
-            }
-        });
+            res.status(200).jsonp(travel);
+        }
+    });
 };
 
 exports.addTravel = function(req, res) {
@@ -141,19 +142,22 @@ exports.addJoinPetition = function(req, res) {
 					            res.json({success: false, message: 'User not found.'});
 					        } else if (user) {
 							//notification
-								var notification = {
+								var notification = new notificationModel({
 									type: "join",
 									message: "user "+userJoining.username+" joins your travel "+travel.title,
 									date: new Date(),
 									icon: 'join.png',
 									link: ""
-								};
-								user.notifications.push(notification);
-								user.save(function(err, user) {
+								});
+								notification.save(function(err, notification) {
 									if (err) return res.send(500, err.message);
+									user.notifications.push(notification._id);
+									user.save(function(err, user) {
+										if (err) return res.send(500, err.message);
 
-									console.log("notification saved");
-									exports.getTravelById(req, res);
+										console.log("notification saved");
+										exports.getTravelById(req, res);
+									});
 								});
 							}
 						});//end saving notification
@@ -197,43 +201,22 @@ exports.unJoin = function(req, res) {
 	});
 };
 
-exports.getJoinsByTravelId = function(req, res) {
-    joinModel.find({
-      travelId: req.params.travelId
-  }, function(err, joins) {
+exports.getTravelsByUserId = function(req, res) {
+	travelModel.find({
+		user: req.params.userid
+	})
+	.lean()
+	.populate('joins', 'username avatar')
+	.populate('comments', 'comment user')
+	.exec(function (err, travels) {
+		if (err) return res.send(500, err.message);
+		if (!travels) {
+			res.json({success: false, message: 'travel not found.'});
+		} else if (travels) {
 
-      if (err) throw err;
-
-      if (!joins) {
-        res.json({ success: false, message: 'no joins for travelId' });
-    } else if (joins) {
-          // return the information including token as JSON
-		 res.jsonp(joins);
-
-      }
-
-    });
-};
-
-exports.findAllTravelsFromUsername = function(req, res) {
-    travelModel.find({
-      owner: req.params.username,
-			date: {$gte: new Date()}
-  }, function(err, travels) {
-
-      if (err) throw err;
-
-      if (!travels) {
-        res.json({ success: false, message: 'no travels for user' });
-    } else if (travels) {
-        console.log(travels);
-          // return the information including token as JSON
-          res.jsonp(travels);
-
-
-      }
-
-    });
+			res.status(200).jsonp(travels);
+		}
+	});
 };
 
 
