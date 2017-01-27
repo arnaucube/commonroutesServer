@@ -20,7 +20,7 @@ exports.getAllTravels = function(req, res) {
 exports.getTravelById = function (req, res) {
     travelModel.findOne({_id: req.params.travelid})
     .lean()
-    .populate('user', 'username avatar')
+    .populate('user', 'username avatar telegram phone')
     .populate('joins', 'username avatar')
     .populate('comments', 'comment user')
     .exec(function (err, travel) {
