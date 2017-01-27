@@ -9,8 +9,16 @@ var travelSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'userModel'
     },
-    from: { type: String, required: true },
-    to: { type: String, required: true },
+    from: {
+        lat: {type: Number},
+        long: {type: Number},
+        name: { type: String, required: true }
+    },
+    to: {
+        lat: {type: Number},
+        long: {type: Number},
+        name: { type: String, required: true }
+    },
     date: { type: Date },
     periodic: { type: Boolean },
     generateddate: { type: Date },
