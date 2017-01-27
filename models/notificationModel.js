@@ -10,9 +10,9 @@ var notificationSchema = new Schema({
         ref: 'userModel'
     },
     state: {type: String, default: "pendent"},//viewed, pendent
+    concept: {type: String},
     message: {type: String},
-    link: {type: String},//aquí oju, a la app i a la web calen links diferents, però ho podem fer posant sempre a la app i a la web el prefix del link (#!/app) o (#/app/), i després afegint-hi la pàgina on volem enviar el routing, per exemple (dashboard)
-    icon: {type: String},
+    link: {type: String},//aquí oju, a la app i a la web calen links diferents
     date: {type: Date},
     dateviewed: {type: Date}
 })

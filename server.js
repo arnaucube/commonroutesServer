@@ -33,6 +33,7 @@ var notificationMdl = require('./models/notificationModel')(app, mongoose);
 var travelMdl = require('./models/travelModel')(app, mongoose);
 var commentMdl = require('./models/commentModel')(app, mongoose);
 var userCtrl = require('./controllers/userController');
+var searchCtrl = require('./controllers/searchController');
 var travelCtrl = require('./controllers/travelController');
 
 /*// Example Route
@@ -107,6 +108,10 @@ apiRoutes.use(function(req, res, next) {
 }); //fi verificació de token
 
 
+apiRoutes.route('/search/:searchstring')
+    .get(searchCtrl.searchByString);
+apiRoutes.route('/notifications')
+    .get(userCtrl.getNotifications);
 apiRoutes.route('/users/token')
     .get(userCtrl.getUserByToken);
 apiRoutes.route('/users')//agafa l'user a partir del token
@@ -118,9 +123,9 @@ apiRoutes.route('/travels/id/modify/:travelid')
     .put(travelCtrl.updateTravel)//no comprovat
     .delete(travelCtrl.deleteTravel);
 apiRoutes.route('/travels/join/:travelid')
-    .get(travelCtrl.addJoinPetition);
+    .post(travelCtrl.addJoinPetition);
 apiRoutes.route('/travels/unjoin/:travelid')
-    .get(travelCtrl.unJoin);
+    .post(travelCtrl.unJoin);
 apiRoutes.route('/travels/byuser/id/:userid')
     .get(travelCtrl.getTravelsByUserId);
 //FINS AQUÏ COMPROVAT

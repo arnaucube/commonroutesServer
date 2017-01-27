@@ -107,7 +107,7 @@ exports.getAllUsers = function(req, res) {
         });
 };
 
-//GET - Return a User with specified ID
+
 exports.getUserById = function (req, res) {
     userModel.findOne({_id: req.params.userid})
     .lean()
@@ -122,7 +122,6 @@ exports.getUserById = function (req, res) {
         }
     });
 };
-//GET - Return a User with specified ID
 exports.getUserByToken = function (req, res) {
     userModel.findOne({'token': req.headers['x-access-token']})
     .lean()
@@ -134,6 +133,20 @@ exports.getUserByToken = function (req, res) {
         } else if (user) {
 
             res.status(200).jsonp(user);
+        }
+    });
+};
+exports.getNotifications = function (req, res) {
+    userModel.findOne({'token': req.headers['x-access-token']})
+    .lean()
+    .populate('notifications')
+    .exec(function (err, user) {
+        if (err) return res.send(500, err.message);
+        if (!user) {
+            res.json({success: false, message: 'User not found.'});
+        } else if (user) {
+
+            res.status(200).jsonp(user.notifications);
         }
     });
 };
@@ -197,7 +210,7 @@ exports.addFav = function(req, res) {
 
             //notification
             var notification = {
-                type: "fav",
+                concept: "like",
                 otherusername: tokenuser.username,
                 description: "user " + tokenuser.username + " favs you",
                 date: new Date(),

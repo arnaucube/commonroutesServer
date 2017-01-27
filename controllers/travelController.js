@@ -144,11 +144,11 @@ exports.addJoinPetition = function(req, res) {
 					        } else if (user) {
 							//notification
 								var notification = new notificationModel({
-									type: "join",
+									concept: "join",
 									message: "user "+userJoining.username+" joins your travel "+travel.title,
 									date: new Date(),
 									icon: 'join.png',
-									link: ""
+									link: "travels/" + travel._id
 								});
 								notification.save(function(err, notification) {
 									if (err) return res.send(500, err.message);
@@ -171,13 +171,13 @@ exports.addJoinPetition = function(req, res) {
 
 exports.unJoin = function(req, res) {
 	userModel.findOne({'token': req.headers['x-access-token']})
-	.exec(function(err, user){
-		if (!user) {
-            res.json({success: false, message: 'User not found.'});
-        } else if (user) {
+	.exec(function(err, userJoining){
+		if (!userJoining) {
+            res.json({success: false, message: 'userJoining not found.'});
+        } else if (userJoining) {
 			travelModel.findOne({
 				_id: req.params.travelid,
-				joinPetitions: user._id
+				joinPetitions: userJoining._id
 			})
 			.exec(function(err, travel){
 				if (err) return res.send(500, err.message);
@@ -186,14 +186,40 @@ exports.unJoin = function(req, res) {
 		        } else if (travel) {
 					for(var i=0; i<travel.joinPetitions.length; i++)
 					{
-						if(travel.joinPetitions[i].equals(user._id))
+						if(travel.joinPetitions[i].equals(userJoining._id))
 						{
 							travel.joinPetitions.splice(i, 1);
 						}
 					}
 					travel.save(function(err, travel) {
 						if(err) return res.send(500, err.message);
-						exports.getTravelById(req, res);
+						//start saving notification, get user owner of travel
+						userModel.findOne({_id: travel.user})
+						.exec(function(err, user){
+							if (err) return res.send(500, err.message);
+							if (!user) {
+					            res.json({success: false, message: 'User not found.'});
+					        } else if (user) {
+							//notification
+								var notification = new notificationModel({
+									concept: "unjoin",
+									message: "user "+userJoining.username+" unjoins your travel "+travel.title,
+									date: new Date(),
+									icon: 'unjoin.png',
+									link: "travels/" + travel._id
+								});
+								notification.save(function(err, notification) {
+									if (err) return res.send(500, err.message);
+									user.notifications.push(notification._id);
+									user.save(function(err, user) {
+										if (err) return res.send(500, err.message);
+
+										console.log("notification saved");
+										exports.getTravelById(req, res);
+									});
+								});
+							}
+						});//end saving notification
 					});
 				}
 			});
@@ -270,7 +296,7 @@ exports.addComment = function(req, res) {
 				var userowner=userowners[0];
 				//notification
 				var notification = {
-					type: "comment",
+					concept: "comment",
 					otherusername: user.username,
 					description: "user "+user.username+" comments your travel "+travel.title,
 					date: new Date(),
