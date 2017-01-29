@@ -47,7 +47,9 @@ exports.login = function(req, res) {
     // find the user
     userModel.findOne({
         username: req.body.username
-    }, function(err, user) {
+    })
+    .select('+password')
+    .exec(function(err, user) {
 
         if (err) throw err;
 
