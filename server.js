@@ -128,6 +128,8 @@ apiRoutes.route('/travels/unjoin/:travelid')
     .post(travelCtrl.unJoin);
 apiRoutes.route('/travels/byuser/id/:userid')
     .get(travelCtrl.getTravelsByUserId);
+apiRoutes.route('/travels/acceptJoin/:travelid')
+    .post(travelCtrl.acceptJoin);
 //FINS AQUÏ COMPROVAT
 
 apiRoutes.route('/travels/comment/:travelid')
