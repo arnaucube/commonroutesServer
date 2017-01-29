@@ -155,19 +155,7 @@ exports.updateUser = function (req, res) {
     userModel.update({'token': req.headers['x-access-token']}, req.body,
         function (err) {
             if (err) return console.log(err);
-            console.log(user);
-            userModel.findOne({_id: user._id})
-            .lean()
-            .populate('travels', 'title from to date')
-            .exec(function (err, user) {
-                if (err) return res.send(500, err.message);
-                if (!user) {
-                    res.json({success: false, message: 'User not found.'});
-                } else if (user) {
-
-                    res.status(200).jsonp(user);
-                }
-            });
+            exports.getUserByToken(req, res);
         });
 };
 
