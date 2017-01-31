@@ -2,6 +2,7 @@
 var mongoose = require('mongoose');
 var userModel = mongoose.model('userModel');
 var notificationModel  = mongoose.model('notificationModel');
+var travelModel  = mongoose.model('travelModel');
 
 
 /* */
@@ -136,6 +137,31 @@ exports.getUserByToken = function (req, res) {
 
             res.status(200).jsonp(user);
         }
+    });
+};
+
+exports.getTravelsByUserId = function (req, res) {
+    travelModel.find(
+        {
+            user: req.params.userid
+        }
+    )
+    .lean()
+    .exec(function (err, travels) {
+        if (err) return res.send(500, err.message);
+        travelModel.find(
+            {
+                joins: req.params.userid
+            }
+        )
+        .lean()
+        .exec(function (err, joins) {
+            if (err) return res.send(500, err.message);
+            res.json({
+                travels: travels,
+                joins: joins
+            });
+        });
     });
 };
 exports.getNotifications = function (req, res) {
