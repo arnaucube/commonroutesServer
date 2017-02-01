@@ -29,8 +29,8 @@ exports.searchByString = function (req, res) {
             if (err) return res.send(500, err.message);
             travelModel.find({
                 $or:[
-                    {from: new RegExp(req.params.searchstring, "i")},
-                    {to: new RegExp(req.params.searchstring, "i")},
+                    {'from.name': new RegExp(req.params.searchstring, "i")},
+                    {'to.name': new RegExp(req.params.searchstring, "i")},
                     {title: new RegExp(req.params.searchstring, "i")}
                 ]
             })//perquè retorni tots els objectes que continguin l'string sense necessitat de que sigui exactament la mateixa string

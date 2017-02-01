@@ -19,7 +19,7 @@ var travelSchema = new Schema({
         long: {type: Number},
         name: { type: String, required: true }
     },
-    date: { type: Date },
+    date: { type: Date, required: true },
     periodic: { type: Boolean },
     generateddate: { type: Date },
     seats: { type: Number, required: true },
