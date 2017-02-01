@@ -6,11 +6,13 @@ var travelModel  = mongoose.model('travelModel');
 var commentModel  = mongoose.model('commentModel');
 
 //GET
+var pageSize=2;
 exports.getAllTravels = function(req, res) {
 	//get travels with futures dates ($gte - greater than and equal than)
 	travelModel.find({date: {$gte: new Date()}})
-    .limit(Number(req.query.pageSize))
-    .skip(Number(req.query.pageSize) * Number(req.query.page))
+	.sort('date')
+    .limit(pageSize)
+    .skip(pageSize * Number(req.query.page))
     .exec(function (err, travels) {
         if (err) return res.send(500, err.message);
         res.status(200).jsonp(travels);
@@ -420,24 +422,6 @@ exports.leave = function(req, res) {
 			});
 		}
 
-	});
-};
-
-exports.getTravelsByUserId = function(req, res) {
-	travelModel.find({
-		user: req.params.userid
-	})
-	.lean()
-	.populate('joins', 'username avatar')
-	.populate('comments', 'comment user')
-	.exec(function (err, travels) {
-		if (err) return res.send(500, err.message);
-		if (!travels) {
-			res.json({success: false, message: 'travel not found.'});
-		} else if (travels) {
-
-			res.status(200).jsonp(travels);
-		}
 	});
 };
 
