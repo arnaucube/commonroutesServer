@@ -22,6 +22,10 @@ var userSchema = new Schema({
         value: { type: Number },
         comment: { type: String }
     }],
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userModel'
+    }],
     favs: [{
         user: {
             type: mongoose.Schema.Types.ObjectId,

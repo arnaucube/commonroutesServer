@@ -164,6 +164,19 @@ exports.getTravelsByUserId = function (req, res) {
         });
     });
 };
+exports.getUserLikes = function (req, res) {
+    userModel.findOne({_id: req.params.userid})
+    .lean()
+    .populate('likes', 'username avatar description')
+    .exec(function (err, user) {
+        if (err) return res.send(500, err.message);
+        if (!user) {
+            res.json({success: false, message: 'User not found.'});
+        } else if (user) {
+            res.status(200).jsonp(user.likes);
+        }
+    });
+};
 exports.getNotifications = function (req, res) {
     userModel.findOne({'token': req.headers['x-access-token']})
     .lean()
@@ -195,6 +208,91 @@ exports.deleteUser = function(req, res) {
             if (err) return res.send(500, err.message);
             res.status(200).jsonp("deleted");
         })
+    });
+};
+exports.likeUser = function(req, res) {
+    userModel.findOne({'token': req.headers['x-access-token']})
+    .exec(function (err, userL) {
+        if (err) return res.send(500, err.message);
+        if (!userL) {
+            res.json({success: false, message: 'no user with that token, login again'});
+        } else if (userL) {
+
+            userModel.findOne({
+                _id: req.params.userid,
+                likes: {'$ne': userL._id}
+            })
+            .exec(function (err, user) {
+                if (err) return res.send(500, err.message);
+                if (!user) {
+                    res.json({success: false, message: 'Like not posible, user not exist, or like was already done'});
+                } else if (user) {
+                    //res.status(200).jsonp(user);
+                    var notification = new notificationModel({
+                        concept: "like",
+                        message: "user "+userL.username+" adds a like to you",
+                        date: new Date(),
+                        icon: 'like.png',
+                        link: "users/" + user._id
+                    });
+                    notification.save(function(err, notification) {
+                        if (err) return res.send(500, err.message);
+
+                        user.likes.push(userL._id);
+                        user.notifications.push(notification._id);
+                        user.save(function(err, user) {
+                            if (err) return res.send(500, err.message);
+
+                            exports.getUserById(req, res);
+                        });
+                    });
+
+                }//end of else if user
+            });
+        }//end of else if userL
+    });
+};
+exports.unlikeUser = function(req, res) {
+    userModel.findOne({'token': req.headers['x-access-token']})
+    .exec(function (err, userL) {
+        if (err) return res.send(500, err.message);
+        if (!userL) {
+            res.json({success: false, message: 'no user with that token, login again'});
+        } else if (userL) {
+
+            userModel.findOne({
+                _id: req.params.userid,
+                likes: userL._id
+            })
+            .exec(function (err, user) {
+                if (err) return res.send(500, err.message);
+                if (!user) {
+                    res.json({success: false, message: 'Unlike not posible'});
+                } else if (user) {
+                    //res.status(200).jsonp(user);
+                    var notification = new notificationModel({
+                        concept: "like",
+                        message: "user "+userL.username+" removes like on you",
+                        date: new Date(),
+                        icon: 'like.png',
+                        link: "users/" + user._id
+                    });
+                    notification.save(function(err, notification) {
+                        if (err) return res.send(500, err.message);
+
+                        var indexOf= user.likes.indexOf(userL._id);
+                        user.likes.splice(indexOf, 1);
+                        user.notifications.push(notification._id);
+                        user.save(function(err, user) {
+                            if (err) return res.send(500, err.message);
+
+                            exports.getUserById(req, res);
+                        });
+                    });
+
+                }//end of else if user
+            });
+        }//end of else if userL
     });
 };
 /* fav */

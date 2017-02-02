@@ -135,6 +135,15 @@ apiRoutes.route('/travels/declineJoin/:travelid')
     .post(travelCtrl.declineJoin);
 apiRoutes.route('/travels/acceptJoin/:travelid')
     .post(travelCtrl.acceptJoin);
+
+
+apiRoutes.route('/users/id/likes/:userid')
+    .get(userCtrl.getUserLikes);
+apiRoutes.route('/users/id/like/:userid')
+    .post(userCtrl.likeUser);
+apiRoutes.route('/users/id/unlike/:userid')
+    .post(userCtrl.unlikeUser);
+
 //FINS AQUÏ COMPROVAT
 
 apiRoutes.route('/travels/comment/:travelid')
