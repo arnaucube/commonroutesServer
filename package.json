@@ -1,12 +1,11 @@
 {
-  "name": "comunalCar",
+  "name": "CarsInCommon",
   "version": "0.0.1",
-  "description": "comunalCar, carsharing",
+  "description": "CarsInCommon, cooperative carsharing",
   "repository": "https://github.com/arnaucode/carsincommonServer",
   "contributors": [
     {
       "name": "Arnau",
-      "email": "idoctnef@openmailbox.org",
       "web": "arnaucode.com"
     }
   ],

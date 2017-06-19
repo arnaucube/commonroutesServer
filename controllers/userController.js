@@ -187,7 +187,18 @@ exports.getNotifications = function (req, res) {
             res.json({success: false, message: 'User not found.'});
         } else if (user) {
 
-            res.status(200).jsonp(user.notifications);
+            //res.status(200).jsonp(user.notifications);
+            notificationModel.find({'user': user._id})
+            .lean()
+            .exec(function (err, notifications) {
+                if (err) return res.send(500, err.message);
+                if (!notifications) {
+                    res.json({success: false, message: 'No pendent notifications.'});
+                } else if (notifications) {
+
+                    res.status(200).jsonp(notifications);
+                }
+            });
         }
     });
 };
@@ -233,7 +244,8 @@ exports.likeUser = function(req, res) {
                         message: "user "+userL.username+" adds a like to you",
                         date: new Date(),
                         icon: 'like.png',
-                        link: "users/" + user._id
+                        link: "users/" + user._id,
+                        user: user._id
                     });
                     notification.save(function(err, notification) {
                         if (err) return res.send(500, err.message);
@@ -275,7 +287,8 @@ exports.unlikeUser = function(req, res) {
                         message: "user "+userL.username+" removes like on you",
                         date: new Date(),
                         icon: 'like.png',
-                        link: "users/" + user._id
+                        link: "users/" + user._id,
+                        user: user._id
                     });
                     notification.save(function(err, notification) {
                         if (err) return res.send(500, err.message);
@@ -328,7 +341,8 @@ exports.addFav = function(req, res) {
                 otherusername: tokenuser.username,
                 description: "user " + tokenuser.username + " favs you",
                 date: new Date(),
-                link: ""
+                link: "",
+                user: user._id
             };
             user.notifications.push(notification);
 

@@ -6,7 +6,7 @@ var travelModel  = mongoose.model('travelModel');
 var commentModel  = mongoose.model('commentModel');
 
 //GET
-var pageSize=2;
+var pageSize=20;
 exports.getAllTravels = function(req, res) {
 	//get travels with futures dates ($gte - greater than and equal than)
 	travelModel.find({date: {$gte: new Date()}})
@@ -151,7 +151,8 @@ exports.addJoinPetition = function(req, res) {
 									message: "user "+userJoining.username+" joins your travel "+travel.title,
 									date: new Date(),
 									icon: 'join.png',
-									link: "travels/" + travel._id
+									link: "travels/" + travel._id,
+			                        user: user._id
 								});
 								notification.save(function(err, notification) {
 									if (err) return res.send(500, err.message);
@@ -209,7 +210,8 @@ exports.unJoin = function(req, res) {
 									message: "user "+userJoining.username+" unjoins your travel "+travel.title,
 									date: new Date(),
 									icon: 'unjoin.png',
-									link: "travels/" + travel._id
+									link: "travels/" + travel._id,
+			                        user: user._id
 								});
 								notification.save(function(err, notification) {
 									if (err) return res.send(500, err.message);
@@ -277,7 +279,8 @@ exports.declineJoin = function(req, res) {
 									message: "user "+userOwner.username+" declines your petition for "+travel.title,
 									date: new Date(),
 									icon: 'travel.png',
-									link: "travels/" + travel._id
+									link: "travels/" + travel._id,
+			                        user: user._id
 								});
 								notification.save(function(err, notification) {
 									if (err) return res.send(500, err.message);
@@ -345,7 +348,8 @@ exports.acceptJoin = function(req, res) {
 									message: "user "+userOwner.username+" accepts your petition for "+travel.title,
 									date: new Date(),
 									icon: 'travel.png',
-									link: "travels/" + travel._id
+									link: "travels/" + travel._id,
+			                        user: user._id
 								});
 								notification.save(function(err, notification) {
 									if (err) return res.send(500, err.message);
@@ -403,7 +407,8 @@ exports.leave = function(req, res) {
 									message: "user "+userLeaving.username+" leaves your travel "+travel.title,
 									date: new Date(),
 									icon: 'leave.png',
-									link: "travels/" + travel._id
+									link: "travels/" + travel._id,
+			                        user: user._id
 								});
 								notification.save(function(err, notification) {
 									if (err) return res.send(500, err.message);
@@ -479,7 +484,8 @@ exports.addComment = function(req, res) {
 					otherusername: user.username,
 					description: "user "+user.username+" comments your travel "+travel.title,
 					date: new Date(),
-					link: ""
+					link: "",
+					user: userowners[0]._id
 				};
 				userowner.notifications.push(notification);
 				userowner.save(function(err, userowner) {
