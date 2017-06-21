@@ -1,8 +1,8 @@
 //File: controllers/userController.js
 var mongoose = require('mongoose');
 var userModel = mongoose.model('userModel');
-var notificationModel  = mongoose.model('notificationModel');
-var travelModel  = mongoose.model('travelModel');
+var notificationModel = mongoose.model('notificationModel');
+var travelModel = mongoose.model('travelModel');
 
 
 /* */
@@ -14,6 +14,8 @@ app.set('superSecret', config.secret); // secret variable
 
 var crypto = require('crypto');
 /* */
+
+var request = require('request');
 
 //POST - Insert a new User in the DB
 exports.signup = function(req, res) {
@@ -38,7 +40,7 @@ exports.signup = function(req, res) {
     user.save(function(err, user) {
         if (err) return res.send(500, err.message);
 
-		exports.login(req, res);
+        exports.login(req, res);
     });
 };
 
@@ -47,56 +49,58 @@ exports.signup = function(req, res) {
 exports.login = function(req, res) {
     // find the user
     userModel.findOne({
-        username: req.body.username
-    })
-    .select('+password')
-    .exec(function(err, user) {
+            username: req.body.username
+        })
+        .select('+password')
+        .exec(function(err, user) {
 
-        if (err) throw err;
+            if (err) throw err;
 
-        if (!user) {
-            res.json({
-                success: false,
-                message: 'Authentication failed. User not found.'
-            });
-        } else if (user) {
-
-            req.body.password = crypto.createHash('sha256').update(req.body.password).digest('base64');
-
-            // check if password matches
-            if (user.password != req.body.password) {
+            if (!user) {
                 res.json({
                     success: false,
-                    message: 'Authentication failed. Wrong password.'
+                    message: 'Authentication failed. User not found.'
                 });
-            } else {
+            } else if (user) {
 
-                // if user is found and password is right
-                // create a token
-                var token = jwt.sign({foo: 'bar'}, app.get('superSecret'), {
-                    //expiresInMinutes: 1440 // expires in 24 hours
-                    //expiresIn: '60m'
-                });
-                user.token = token;
-                user.save(function(err, user) {
-                    if (err) return res.send(500, err.message);
-                    //res.status(200).jsonp(travel);
-                    console.log(user);
-                    // return the information including token as JSON
-                    user.password = "";
+                req.body.password = crypto.createHash('sha256').update(req.body.password).digest('base64');
+
+                // check if password matches
+                if (user.password != req.body.password) {
                     res.json({
-                        success: true,
-                        message: 'Enjoy your token!',
-                        token: token,
-                        user: user
+                        success: false,
+                        message: 'Authentication failed. Wrong password.'
                     });
-                });
+                } else {
+
+                    // if user is found and password is right
+                    // create a token
+                    var token = jwt.sign({
+                        foo: 'bar'
+                    }, app.get('superSecret'), {
+                        //expiresInMinutes: 1440 // expires in 24 hours
+                        //expiresIn: '60m'
+                    });
+                    user.token = token;
+                    user.save(function(err, user) {
+                        if (err) return res.send(500, err.message);
+                        //res.status(200).jsonp(travel);
+                        console.log(user);
+                        // return the information including token as JSON
+                        user.password = "";
+                        res.json({
+                            success: true,
+                            message: 'Enjoy your token!',
+                            token: token,
+                            user: user
+                        });
+                    });
+
+                }
 
             }
 
-        }
-
-    });
+        });
 };
 
 //GET - Return all Users in the DB
@@ -104,209 +108,293 @@ exports.getAllUsers = function(req, res) {
     userModel.find()
         .limit(Number(req.query.pageSize))
         .skip(Number(req.query.pageSize) * Number(req.query.page))
-        .exec(function (err, users) {
+        .exec(function(err, users) {
             if (err) return res.send(500, err.message);
             res.status(200).jsonp(users);
         });
 };
 
-
-exports.getUserById = function (req, res) {
-    userModel.findOne({_id: req.params.userid})
-    .lean()
-    .populate('travels', 'title from to date type')
-    .exec(function (err, user) {
-        if (err) return res.send(500, err.message);
-        if (!user) {
-            res.json({success: false, message: 'User not found.'});
-        } else if (user) {
-
-            res.status(200).jsonp(user);
-        }
-    });
-};
-exports.getUserByToken = function (req, res) {
-    userModel.findOne({'token': req.headers['x-access-token']})
-    .lean()
-    .populate('travels', 'title from to date')
-    .exec(function (err, user) {
-        if (err) return res.send(500, err.message);
-        if (!user) {
-            res.json({success: false, message: 'User not found.'});
-        } else if (user) {
-
-            res.status(200).jsonp(user);
-        }
-    });
-};
-
-exports.getTravelsByUserId = function (req, res) {
-    travelModel.find(
-        {
-            user: req.params.userid
-        }
-    )
-    .lean()
-    .exec(function (err, travels) {
-        if (err) return res.send(500, err.message);
-        travelModel.find(
-            {
-                joins: req.params.userid
-            }
-        )
+exports.getUserById = function(req, res) {
+    userModel.findOne({
+            _id: req.params.userid
+        })
         .lean()
-        .exec(function (err, joins) {
+        .populate('travels', 'title from to date type')
+        .exec(function(err, user) {
             if (err) return res.send(500, err.message);
-            res.json({
-                travels: travels,
-                joins: joins
-            });
+            if (!user) {
+                res.json({
+                    success: false,
+                    message: 'User not found.'
+                });
+            } else if (user) {
+                res.status(200).jsonp(user);
+            }
         });
-    });
 };
-exports.getUserLikes = function (req, res) {
-    userModel.findOne({_id: req.params.userid})
-    .lean()
-    .populate('likes', 'username avatar description')
-    .exec(function (err, user) {
-        if (err) return res.send(500, err.message);
-        if (!user) {
-            res.json({success: false, message: 'User not found.'});
-        } else if (user) {
-            res.status(200).jsonp(user.likes);
-        }
-    });
-};
-exports.getNotifications = function (req, res) {
-    userModel.findOne({'token': req.headers['x-access-token']})
-    .lean()
-    .populate('notifications')
-    .exec(function (err, user) {
-        if (err) return res.send(500, err.message);
-        if (!user) {
-            res.json({success: false, message: 'User not found.'});
-        } else if (user) {
+exports.getUserByToken = function(req, res) {
+    userModel.findOne({
+            'token': req.headers['x-access-token']
+        })
+        .lean()
+        .populate('travels', 'title from to date')
+        .exec(function(err, user) {
+            if (err) return res.send(500, err.message);
+            if (!user) {
+                res.json({
+                    success: false,
+                    message: 'User not found.'
+                });
+            } else if (user) {
 
-            //res.status(200).jsonp(user.notifications);
-            notificationModel.find({'user': user._id})
-            .lean()
-            .exec(function (err, notifications) {
-                if (err) return res.send(500, err.message);
-                if (!notifications) {
-                    res.json({success: false, message: 'No pendent notifications.'});
-                } else if (notifications) {
-
-                    res.status(200).jsonp(notifications);
-                }
-            });
-        }
-    });
+                res.status(200).jsonp(user);
+            }
+        });
 };
 
-exports.updateUser = function (req, res) {
-    userModel.update({'token': req.headers['x-access-token']}, req.body,
-        function (err) {
+exports.getTravelsByUserId = function(req, res) {
+    travelModel.find({
+            user: req.params.userid
+        })
+        .lean()
+        .exec(function(err, travels) {
+            if (err) return res.send(500, err.message);
+            travelModel.find({
+                    joins: req.params.userid
+                })
+                .lean()
+                .exec(function(err, joins) {
+                    if (err) return res.send(500, err.message);
+                    res.json({
+                        travels: travels,
+                        joins: joins
+                    });
+                });
+        });
+};
+exports.getUserLikes = function(req, res) {
+    userModel.findOne({
+            _id: req.params.userid
+        })
+        .lean()
+        .populate('likes', 'username avatar description')
+        .exec(function(err, user) {
+            if (err) return res.send(500, err.message);
+            if (!user) {
+                res.json({
+                    success: false,
+                    message: 'User not found.'
+                });
+            } else if (user) {
+                res.status(200).jsonp(user.likes);
+            }
+        });
+};
+exports.getNotifications = function(req, res) {
+    userModel.findOne({
+            'token': req.headers['x-access-token']
+        })
+        .lean()
+        .populate('notifications')
+        .exec(function(err, user) {
+            if (err) return res.send(500, err.message);
+            if (!user) {
+                res.json({
+                    success: false,
+                    message: 'User not found.'
+                });
+            } else if (user) {
+
+                //res.status(200).jsonp(user.notifications);
+                notificationModel.find({
+                        'user': user._id
+                    })
+                    .lean()
+                    .exec(function(err, notifications) {
+                        if (err) return res.send(500, err.message);
+                        if (!notifications) {
+                            res.json({
+                                success: false,
+                                message: 'No pendent notifications.'
+                            });
+                        } else if (notifications) {
+
+                            res.status(200).jsonp(notifications);
+                        }
+                    });
+            }
+        });
+};
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
+function postImage(req, res, filename, fileImg) {
+    url = "http://127.0.0.1:3050/image";
+    var importFile = function(fileImg) {
+        var decodedFile = new Buffer(fileImg, 'base64');
+        var r = request.post(url, function(err, httpResponse, body) {
+            if (err) {
+                console.log(err);
+            }
+            //console.log(body);
+            updateUserWithNewImages(req, res, body);
+        });
+        var form = r.form();
+        form.append('file', decodedFile, {
+            filename: filename + '.png'
+        });
+    }
+    importFile(fileImg);
+}
+function updateUserWithNewImages(req, res, imgUrl){
+    //adding random number to the url, to force ionic reload the image
+    req.body.avatar = imgUrl+ "?" + getRandomInt(1, 9999);
+    userModel.update({
+            'token': req.headers['x-access-token']
+        }, req.body,
+        function(err) {
             if (err) return console.log(err);
             exports.getUserByToken(req, res);
         });
+}
+exports.updateUser = function(req, res) {
+    if (req.body.newAvatar) {
+        urlImg = postImage(req, res, "avatar_"+req.body.username, req.body.newAvatar);
+    }
+    /*if (req.body.newFaircoin) {
+        urlImg = postImage(req, res, "fairdir_"+req.body.username,req.body.newFaircoin);
+    }*/
+    if (!req.body.newAvatar){
+        updateUserWithNewImages(req, res, req.body.avatar);
+    }
+    /*userModel.update({
+            'token': req.headers['x-access-token']
+        }, req.body,
+        function(err) {
+            if (err) return console.log(err);
+            exports.getUserByToken(req, res);
+        });*/
 };
 
 //DELETE - Delete a user with specified ID
 exports.deleteUser = function(req, res) {
-    userModel.findOne({'token': req.headers['x-access-token']})
-    .exec(function(err, user) {
-        user.remove(function(err) {
-            if (err) return res.send(500, err.message);
-            res.status(200).jsonp("deleted");
+    userModel.findOne({
+            'token': req.headers['x-access-token']
         })
-    });
+        .exec(function(err, user) {
+            user.remove(function(err) {
+                if (err) return res.send(500, err.message);
+                res.status(200).jsonp("deleted");
+            })
+        });
 };
 exports.likeUser = function(req, res) {
-    userModel.findOne({'token': req.headers['x-access-token']})
-    .exec(function (err, userL) {
-        if (err) return res.send(500, err.message);
-        if (!userL) {
-            res.json({success: false, message: 'no user with that token, login again'});
-        } else if (userL) {
+    userModel.findOne({
+            'token': req.headers['x-access-token']
+        })
+        .exec(function(err, userL) {
+            if (err) return res.send(500, err.message);
+            if (!userL) {
+                res.json({
+                    success: false,
+                    message: 'no user with that token, login again'
+                });
+            } else if (userL) {
 
-            userModel.findOne({
-                _id: req.params.userid,
-                likes: {'$ne': userL._id}
-            })
-            .exec(function (err, user) {
-                if (err) return res.send(500, err.message);
-                if (!user) {
-                    res.json({success: false, message: 'Like not posible, user not exist, or like was already done'});
-                } else if (user) {
-                    //res.status(200).jsonp(user);
-                    var notification = new notificationModel({
-                        concept: "like",
-                        message: "user "+userL.username+" adds a like to you",
-                        date: new Date(),
-                        icon: 'like.png',
-                        link: "users/" + user._id,
-                        user: user._id
-                    });
-                    notification.save(function(err, notification) {
+                userModel.findOne({
+                        _id: req.params.userid,
+                        likes: {
+                            '$ne': userL._id
+                        }
+                    })
+                    .exec(function(err, user) {
                         if (err) return res.send(500, err.message);
+                        if (!user) {
+                            res.json({
+                                success: false,
+                                message: 'Like not posible, user not exist, or like was already done'
+                            });
+                        } else if (user) {
+                            //res.status(200).jsonp(user);
+                            var notification = new notificationModel({
+                                concept: "like",
+                                message: "user " + userL.username + " adds a like to you",
+                                date: new Date(),
+                                icon: 'like.png',
+                                link: "users/" + user._id,
+                                user: user._id
+                            });
+                            notification.save(function(err, notification) {
+                                if (err) return res.send(500, err.message);
 
-                        user.likes.push(userL._id);
-                        user.notifications.push(notification._id);
-                        user.save(function(err, user) {
-                            if (err) return res.send(500, err.message);
+                                user.likes.push(userL._id);
+                                user.notifications.push(notification._id);
+                                user.save(function(err, user) {
+                                    if (err) return res.send(500, err.message);
 
-                            exports.getUserById(req, res);
-                        });
+                                    exports.getUserById(req, res);
+                                });
+                            });
+
+                        } //end of else if user
                     });
-
-                }//end of else if user
-            });
-        }//end of else if userL
-    });
+            } //end of else if userL
+        });
 };
 exports.unlikeUser = function(req, res) {
-    userModel.findOne({'token': req.headers['x-access-token']})
-    .exec(function (err, userL) {
-        if (err) return res.send(500, err.message);
-        if (!userL) {
-            res.json({success: false, message: 'no user with that token, login again'});
-        } else if (userL) {
+    userModel.findOne({
+            'token': req.headers['x-access-token']
+        })
+        .exec(function(err, userL) {
+            if (err) return res.send(500, err.message);
+            if (!userL) {
+                res.json({
+                    success: false,
+                    message: 'no user with that token, login again'
+                });
+            } else if (userL) {
 
-            userModel.findOne({
-                _id: req.params.userid,
-                likes: userL._id
-            })
-            .exec(function (err, user) {
-                if (err) return res.send(500, err.message);
-                if (!user) {
-                    res.json({success: false, message: 'Unlike not posible'});
-                } else if (user) {
-                    //res.status(200).jsonp(user);
-                    var notification = new notificationModel({
-                        concept: "like",
-                        message: "user "+userL.username+" removes like on you",
-                        date: new Date(),
-                        icon: 'like.png',
-                        link: "users/" + user._id,
-                        user: user._id
-                    });
-                    notification.save(function(err, notification) {
+                userModel.findOne({
+                        _id: req.params.userid,
+                        likes: userL._id
+                    })
+                    .exec(function(err, user) {
                         if (err) return res.send(500, err.message);
+                        if (!user) {
+                            res.json({
+                                success: false,
+                                message: 'Unlike not posible'
+                            });
+                        } else if (user) {
+                            //res.status(200).jsonp(user);
+                            var notification = new notificationModel({
+                                concept: "like",
+                                message: "user " + userL.username + " removes like on you",
+                                date: new Date(),
+                                icon: 'like.png',
+                                link: "users/" + user._id,
+                                user: user._id
+                            });
+                            notification.save(function(err, notification) {
+                                if (err) return res.send(500, err.message);
 
-                        var indexOf= user.likes.indexOf(userL._id);
-                        user.likes.splice(indexOf, 1);
-                        user.notifications.push(notification._id);
-                        user.save(function(err, user) {
-                            if (err) return res.send(500, err.message);
+                                var indexOf = user.likes.indexOf(userL._id);
+                                user.likes.splice(indexOf, 1);
+                                user.notifications.push(notification._id);
+                                user.save(function(err, user) {
+                                    if (err) return res.send(500, err.message);
 
-                            exports.getUserById(req, res);
-                        });
+                                    exports.getUserById(req, res);
+                                });
+                            });
+
+                        } //end of else if user
                     });
-
-                }//end of else if user
-            });
-        }//end of else if userL
-    });
+            } //end of else if userL
+        });
 };
 /* fav */
 exports.addFav = function(req, res) {

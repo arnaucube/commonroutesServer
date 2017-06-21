@@ -20,7 +20,8 @@
     "jsonwebtoken": "latest",
     "method-override": "^2.1.2",
     "mongoose": "latest",
+    "mongoose-unique-validator": "^1.0.2",
     "morgan": "latest",
-    "mongoose-unique-validator": "^1.0.2"
+    "request": "^2.81.0"
   }
 }
