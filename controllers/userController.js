@@ -190,6 +190,24 @@ exports.getUserLikes = function(req, res) {
             }
         });
 };
+exports.getNumNotificationsByToken = function(req, res) {
+    userModel.findOne({
+            'token': req.headers['x-access-token']
+        })
+        .lean()
+        .exec(function(err, user) {
+            if (err) return res.send(500, err.message);
+            if (!user) {
+                res.json({
+                    success: false,
+                    message: 'User not found.'
+                });
+            } else if (user) {
+
+                res.status(200).jsonp(user.notifications);
+            }
+        });
+};
 exports.getNotifications = function(req, res) {
     userModel.findOne({
             'token': req.headers['x-access-token']
@@ -205,9 +223,9 @@ exports.getNotifications = function(req, res) {
                 });
             } else if (user) {
 
-                //res.status(200).jsonp(user.notifications);
                 notificationModel.find({
-                        'user': user._id
+                        'user': user._id,
+                        'state': 'pendent'
                     })
                     .lean()
                     .exec(function(err, notifications) {
@@ -218,10 +236,31 @@ exports.getNotifications = function(req, res) {
                                 message: 'No pendent notifications.'
                             });
                         } else if (notifications) {
-
+                            //here, maybe in the future is better delete the viewed notifications
+                            notificationModel.update(
+                                {state: "pendent"},
+                                {state: "viewed"},
+                                {multi: true},
+                                function(err){
+                                    if(err){
+                                        console.log(err);
+                                    }
+                                }
+                            );
                             res.status(200).jsonp(notifications);
                         }
                     });
+
+                    //now, clean notifications count from user
+                    userModel.update(
+                        {'token': req.headers['x-access-token']},
+                        {notifications: []},
+                        function(err){
+                            if(err){
+                                console.log(err);
+                            }
+                        }
+                    );
             }
         });
 };

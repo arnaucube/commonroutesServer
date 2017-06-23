@@ -113,6 +113,8 @@ apiRoutes.use(function(req, res, next) {
 
 apiRoutes.route('/search/:searchstring')
     .get(searchCtrl.searchByString);
+apiRoutes.route('/numnotifications')
+    .get(userCtrl.getNumNotificationsByToken);
 apiRoutes.route('/notifications')
     .get(userCtrl.getNotifications);
 apiRoutes.route('/users/token')
