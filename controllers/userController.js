@@ -17,14 +17,61 @@ var crypto = require('crypto');
 
 var request = require('request');
 
+function getRand(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
+}
+function getAvatar(n){
+    switch (n) {
+        case 1:
+            avatar = "img/avatars/racoon.png";
+            break;
+        case 2:
+            avatar = "img/avatars/duck.png";
+            break;
+        case 3:
+            avatar = "img/avatars/clown-fish.png";
+            break;
+        case 4:
+            avatar = "img/avatars/tiger.png";
+            break;
+        case 5:
+            avatar = "img/avatars/sloth.png";
+            break;
+        case 6:
+            avatar = "img/avatars/penguin.png";
+            break;
+        case 7:
+            avatar = "img/avatars/owl.png";
+            break;
+        case 8:
+            avatar = "img/avatars/chameleon.png";
+            break;
+        case 9:
+            avatar = "img/avatars/siberian-husky.png";
+            break;
+        case 10:
+            avatar = "img/avatars/toucan.png";
+            break;
+        default:
+            avatar = "img/avatars/racoon.png";
+    }
+    return avatar;
+}
+
 //POST - Insert a new User in the DB
 exports.signup = function(req, res) {
+    //get random avatar
+    var r = getRand(1, 10);
+    randAvatar = getAvatar(r);
+
 
     var user = new userModel({
         username: req.body.username,
         password: crypto.createHash('sha256').update(req.body.password).digest('base64'),
         description: req.body.description,
-        avatar: req.body.avatar,
+        avatar: randAvatar,
         email: req.body.email,
         phone: req.body.phone,
         telegram: req.body.telegram
@@ -237,12 +284,15 @@ exports.getNotifications = function(req, res) {
                             });
                         } else if (notifications) {
                             //here, maybe in the future is better delete the viewed notifications
-                            notificationModel.update(
-                                {state: "pendent"},
-                                {state: "viewed"},
-                                {multi: true},
-                                function(err){
-                                    if(err){
+                            notificationModel.update({
+                                    state: "pendent"
+                                }, {
+                                    state: "viewed"
+                                }, {
+                                    multi: true
+                                },
+                                function(err) {
+                                    if (err) {
                                         console.log(err);
                                     }
                                 }
@@ -251,25 +301,28 @@ exports.getNotifications = function(req, res) {
                         }
                     });
 
-                    //now, clean notifications count from user
-                    userModel.update(
-                        {'token': req.headers['x-access-token']},
-                        {notifications: []},
-                        function(err){
-                            if(err){
-                                console.log(err);
-                            }
+                //now, clean notifications count from user
+                userModel.update({
+                        'token': req.headers['x-access-token']
+                    }, {
+                        notifications: []
+                    },
+                    function(err) {
+                        if (err) {
+                            console.log(err);
                         }
-                    );
+                    }
+                );
             }
         });
 };
 
 function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
 }
+
 function postImage(req, res, filename, fileImg) {
     url = "http://127.0.0.1:3050/image";
     var importFile = function(fileImg) {
@@ -288,9 +341,10 @@ function postImage(req, res, filename, fileImg) {
     }
     importFile(fileImg);
 }
-function updateUserWithNewImages(req, res, imgUrl){
+
+function updateUserWithNewImages(req, res, imgUrl) {
     //adding random number to the url, to force ionic reload the image
-    req.body.avatar = imgUrl+ "?" + getRandomInt(1, 9999);
+    req.body.avatar = imgUrl + "?" + getRandomInt(1, 9999);
     userModel.update({
             'token': req.headers['x-access-token']
         }, req.body,
@@ -301,12 +355,12 @@ function updateUserWithNewImages(req, res, imgUrl){
 }
 exports.updateUser = function(req, res) {
     if (req.body.newAvatar) {
-        urlImg = postImage(req, res, "avatar_"+req.body.username, req.body.newAvatar);
+        urlImg = postImage(req, res, "avatar_" + req.body.username, req.body.newAvatar);
     }
     /*if (req.body.newFaircoin) {
         urlImg = postImage(req, res, "fairdir_"+req.body.username,req.body.newFaircoin);
     }*/
-    if (!req.body.newAvatar){
+    if (!req.body.newAvatar) {
         updateUserWithNewImages(req, res, req.body.avatar);
     }
     /*userModel.update({

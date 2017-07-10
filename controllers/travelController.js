@@ -13,6 +13,8 @@ exports.getAllTravels = function(req, res) {
 	.sort('date')
     .limit(pageSize)
     .skip(pageSize * Number(req.query.page))
+    .lean()
+    .populate('user', 'username avatar')
     .exec(function (err, travels) {
         if (err) return res.send(500, err.message);
         res.status(200).jsonp(travels);
