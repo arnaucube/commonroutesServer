@@ -22,7 +22,7 @@ var travelSchema = new Schema({
     date: { type: Date, required: true },
     periodic: { type: Boolean },
     generateddate: { type: Date },
-    seats: { type: Number, required: true },
+    seats: { type: Number },
     package: { type: Boolean },
     collectivized: { type: Boolean },
     type: { type: String }, //if is an offering travel or asking for travel

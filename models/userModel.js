@@ -10,6 +10,7 @@ var userSchema = new Schema({
     token: { type: String, select: false },
     description:   { type: String, default: "Hello world" },
     avatar:   { type: String, default: "img/avatars/racoon.png" },
+    faircoinString:   { type: String, default: "faircoin wallet" },
     faircoin:   { type: String, default: "img/faircoinpublickey_sample.png" },
     email:   { type: String, required: true },
     phone: { type: String },
