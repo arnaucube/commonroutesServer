@@ -4,6 +4,8 @@ var userModel = mongoose.model('userModel');
 var notificationModel  = mongoose.model('notificationModel');
 var travelModel  = mongoose.model('travelModel');
 
+var config = require('../config');
+var pageSize=config.pageSize;
 
 /* */
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
@@ -21,8 +23,8 @@ exports.searchByString = function (req, res) {
     userModel.find({
         username: new RegExp(req.params.searchstring, "i")
     })//perquè retorni tots els objectes que continguin l'string sense necessitat de que sigui exactament la mateixa string
-        .limit(Number(req.query.pageSize))
-        .skip(Number(req.query.pageSize) * Number(req.query.page))
+        .limit(pageSize)
+        .skip(pageSize * Number(req.query.page))
         .lean()
         .select('username avatar')
         .exec(function (err, users) {
@@ -34,8 +36,8 @@ exports.searchByString = function (req, res) {
                     {title: new RegExp(req.params.searchstring, "i")}
                 ]
             })//perquè retorni tots els objectes que continguin l'string sense necessitat de que sigui exactament la mateixa string
-                .limit(Number(req.query.pageSize))
-                .skip(Number(req.query.pageSize) * Number(req.query.page))
+                .limit(pageSize)
+                .skip(pageSize * Number(req.query.page))
                 .lean()
                 .select('title from to date type')
                 .exec(function (err, travels) {

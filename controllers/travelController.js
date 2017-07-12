@@ -5,8 +5,9 @@ var notificationModel  = mongoose.model('notificationModel');
 var travelModel  = mongoose.model('travelModel');
 var commentModel  = mongoose.model('commentModel');
 
+var config = require('../config');
+var pageSize=config.pageSize;
 //GET
-var pageSize=20;
 exports.getAllTravels = function(req, res) {
 	//get travels with futures dates ($gte - greater than and equal than)
 	travelModel.find({date: {$gte: new Date()}})

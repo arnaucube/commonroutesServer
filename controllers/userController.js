@@ -4,6 +4,8 @@ var userModel = mongoose.model('userModel');
 var notificationModel = mongoose.model('notificationModel');
 var travelModel = mongoose.model('travelModel');
 
+var config = require('../config');
+var pageSize=config.pageSize;
 
 /* */
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
@@ -153,8 +155,8 @@ exports.login = function(req, res) {
 //GET - Return all Users in the DB
 exports.getAllUsers = function(req, res) {
     userModel.find()
-        .limit(Number(req.query.pageSize))
-        .skip(Number(req.query.pageSize) * Number(req.query.page))
+        .limit(pageSize)
+        .skip(pageSize * Number(req.query.page))
         .exec(function(err, users) {
             if (err) return res.send(500, err.message);
             res.status(200).jsonp(users);
