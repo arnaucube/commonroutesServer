@@ -418,7 +418,7 @@ exports.likeUser = function(req, res) {
                                 concept: "like",
                                 message: "user " + userL.username + " adds a like to you",
                                 date: new Date(),
-                                icon: 'like.png',
+                                icon: 'ion-heart',
                                 link: "users/" + user._id,
                                 user: user._id
                             });
@@ -469,7 +469,7 @@ exports.unlikeUser = function(req, res) {
                                 concept: "like",
                                 message: "user " + userL.username + " removes like on you",
                                 date: new Date(),
-                                icon: 'like.png',
+                                icon: 'ion-heart-broken',
                                 link: "users/" + user._id,
                                 user: user._id
                             });

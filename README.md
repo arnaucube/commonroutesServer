@@ -1,15 +1,25 @@
 # CarsInCommonServer
 
-frontend app code: https://github.com/idoctnef/carsincommonApp
-images server: https://github.com/arnaucode/goImgServer
+- frontend app code: https://github.com/arnaucode/carsincommonApp
+- images server: https://github.com/arnaucode/goImgServer
 
 **Backend:**
-    Nodejs + Express + MongoDB
+
+- Nodejs + Express + MongoDB
+- Go --> for the images server
 
 **Frontend:**
-    Angularjs + Ionic + MaterialDesign
+
+- Angularjs + Ionic
 
 
+
+App:
+
+![carsincommon](https://raw.githubusercontent.com/arnaucode/carsincommonApp/master/carsincommon.png "carsincommon")
+code: https://github.com/arnaucode/carsincommonApp
+
+--------------------
 
 
 **To Do Backend and Frontend:**
@@ -17,9 +27,6 @@ images server: https://github.com/arnaucode/goImgServer
 - pagination search
 - https (tls/ssl)
 ```
-
-
---------------------
 
 
 #### RESOURCES using:

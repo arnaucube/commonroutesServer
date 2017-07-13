@@ -14,7 +14,8 @@ var notificationSchema = new Schema({
     message: {type: String},
     link: {type: String},//aquí oju, a la app i a la web calen links diferents
     date: {type: Date},
-    dateviewed: {type: Date}
+    dateviewed: {type: Date},
+    icon: {type: String}
 })
 
 notificationSchema.plugin(mongooseUniqueValidator);

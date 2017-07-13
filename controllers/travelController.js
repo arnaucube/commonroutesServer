@@ -153,7 +153,7 @@ exports.addJoinPetition = function(req, res) {
 									concept: "join",
 									message: "user "+userJoining.username+" joins your travel "+travel.title,
 									date: new Date(),
-									icon: 'join.png',
+									icon: 'ion-person-add',
 									link: "travels/" + travel._id,
 			                        user: user._id
 								});
@@ -212,7 +212,7 @@ exports.unJoin = function(req, res) {
 									concept: "unjoin",
 									message: "user "+userJoining.username+" unjoins your travel "+travel.title,
 									date: new Date(),
-									icon: 'unjoin.png',
+									icon: 'ion-arrow-return-left',
 									link: "travels/" + travel._id,
 			                        user: user._id
 								});
@@ -281,7 +281,7 @@ exports.declineJoin = function(req, res) {
 									concept: "travel",
 									message: "user "+userOwner.username+" declines your petition for "+travel.title,
 									date: new Date(),
-									icon: 'travel.png',
+									icon: 'ion-close',
 									link: "travels/" + travel._id,
 			                        user: user._id
 								});
@@ -350,7 +350,7 @@ exports.acceptJoin = function(req, res) {
 									concept: "travel",
 									message: "user "+userOwner.username+" accepts your petition for "+travel.title,
 									date: new Date(),
-									icon: 'travel.png',
+									icon: 'ion-checkmark',
 									link: "travels/" + travel._id,
 			                        user: user._id
 								});
@@ -409,7 +409,7 @@ exports.leave = function(req, res) {
 									concept: "leave",
 									message: "user "+userLeaving.username+" leaves your travel "+travel.title,
 									date: new Date(),
-									icon: 'leave.png',
+									icon: 'ion-log-out',
 									link: "travels/" + travel._id,
 			                        user: user._id
 								});

@@ -5,5 +5,4 @@ module.exports = {
     'database': 'mongodb://localhost/carsincommon',
     "port" : process.env.PORT || 3000,
     "pageSize": 20
-
 };
