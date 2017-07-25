@@ -5,7 +5,7 @@ var notificationModel = mongoose.model('notificationModel');
 var travelModel = mongoose.model('travelModel');
 
 var config = require('../config');
-var pageSize=config.pageSize;
+var pageSize = config.pageSize;
 
 /* */
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
@@ -24,7 +24,8 @@ function getRand(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
 }
-function getAvatar(n){
+
+function getAvatar(n) {
     switch (n) {
         case 1:
             avatar = "img/avatars/racoon.png";
@@ -572,4 +573,14 @@ exports.doUnfav = function(req, res) {
             });
         });
     });
+};
+exports.changePassword = function(req, res) {
+    //if(req.body.)
+    userModel.update({
+            'token': req.headers['x-access-token']
+        }, req.body,
+        function(err) {
+            if (err) return console.log(err);
+            exports.getUserByToken(req, res);
+        });
 };

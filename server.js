@@ -122,6 +122,8 @@ apiRoutes.route('/users/token')
 apiRoutes.route('/users')//agafa l'user a partir del token
     .put(userCtrl.updateUser)//no comprovat
     .delete(userCtrl.deleteUser);
+apiRoutes.route('/changePassword')//agafa l'user a partir del token
+    .put(userCtrl.changePassword);
 
 apiRoutes.route('/users/id/travels/:userid')
     .get(userCtrl.getTravelsByUserId);
