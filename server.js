@@ -35,9 +35,11 @@ var userMdl = require('./models/userModel')(app, mongoose);
 var notificationMdl = require('./models/notificationModel')(app, mongoose);
 var travelMdl = require('./models/travelModel')(app, mongoose);
 var commentMdl = require('./models/commentModel')(app, mongoose);
+var adminMdl = require('./models/adminModel')(app, mongoose);
 var userCtrl = require('./controllers/userController');
 var searchCtrl = require('./controllers/searchController');
 var travelCtrl = require('./controllers/travelController');
+var adminCtrl = require('./controllers/adminController');
 
 /*// Example Route
 var router = express.Router();
@@ -72,6 +74,9 @@ apiRoutes.route('/travels')
 apiRoutes.route('/travels/id/:travelid')
     .get(travelCtrl.getTravelById);
 
+
+apiRoutes.route('/admin/login')
+    .post(adminCtrl.login);
 
 // OJU AQUÏ TREC la verificació de token temporalment, per fer les proves des de l'app
 // route middleware to verify a token
