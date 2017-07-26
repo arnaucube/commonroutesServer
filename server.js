@@ -118,6 +118,10 @@ apiRoutes.use(function(req, res, next) {
 //admin
 apiRoutes.route('/admin/network')
     .get(adminCtrl.network);
+apiRoutes.route('/admin/travels/id/:travelid')
+    .delete(adminCtrl.deleteTravel);
+apiRoutes.route('/admin/users/id/:userid')
+    .delete(adminCtrl.deleteUser);
 
 apiRoutes.route('/search/:searchstring')
     .get(searchCtrl.searchByString);

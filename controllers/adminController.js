@@ -2,7 +2,9 @@
 var mongoose = require('mongoose');
 var adminModel = mongoose.model('adminModel');
 var userModel = mongoose.model('userModel');
+var notificationModel = mongoose.model('notificationModel');
 var travelModel = mongoose.model('travelModel');
+var travelCtrl = require('../controllers/travelController');
 
 var config = require('../config');
 var pageSize = config.pageSize;
@@ -120,129 +122,239 @@ exports.changePassword = function(req, res) {
         });
 };
 
-function isNodeInNodes(node, nodes){
-    for (var i=0; i<nodes.length; i++){
-        if (node.title==nodes[i].title){
-            return(i);
+
+exports.deleteTravel = function(req, res) {
+    adminModel.findOne({
+            'token': req.headers['x-access-token']
+        })
+        .exec(function(err, admin) {
+            if (!admin) {
+                res.json({
+                    success: false,
+                    message: 'Admin not found'
+                });
+            } else if (admin) {
+                if (err) return res.send(500, err.message);
+                travelModel.findById(req.params.travelid, function(err, travel) {
+                    if (err) return res.send(500, err.message);
+
+                    //add notification to the user who has created the travel
+                    userModel.findOne({
+                            _id: travel.user
+                        })
+                        .exec(function(err, user) {
+                            if (err) return res.send(500, err.message);
+                            if (!user) {
+                                //console.log("Notification not posible, user owner of the travel not exist");
+                            } else if (user) {
+                                var notification = new notificationModel({
+                                    concept: "admin",
+                                    message: "an admin has deleted your travel: " + travel.title,
+                                    date: new Date(),
+                                    icon: 'admin',
+                                    link: "users/" + user._id,
+                                    user: user._id
+                                });
+                                notification.save(function(err, notification) {
+                                    if (err) return res.send(500, err.message);
+
+                                    user.notifications.push(notification._id);
+                                    user.save(function(err, user) {
+                                        if (err) return res.send(500, err.message);
+
+                                        //notification added to user
+                                    });
+                                });
+                            }
+                        });
+                    travel.remove(function(err) {
+                        if (err) return res.send(500, err.message);
+
+                        travelCtrl.getAllTravels(req, res);
+                    });
+                });
+            }
+        });
+};
+
+exports.deleteUser = function(req, res) {
+    adminModel.findOne({
+            'token': req.headers['x-access-token']
+        })
+        .exec(function(err, admin) {
+            if (!admin) {
+                res.json({
+                    success: false,
+                    message: 'Admin not found'
+                });
+            } else if (admin) {
+                if (err) return res.send(500, err.message);
+                userModel.findOne({
+                        _id: req.params.userid
+                    })
+                    .exec(function(err, user) {
+                        if (err) return res.send(500, err.message);
+                        if (!user) {
+                            res.json({
+                                success: false,
+                                message: 'Delete user not posible, user not exist'
+                            });
+                        } else if (user) {
+                            //delete all the travels of this user
+                            travelModel.find({
+                                user: user._id
+                            }).remove().exec(function(err, data) {});
+
+                            //delete all the comments of this user
+
+                            //now delete user
+                            user.remove(function(err) {
+                                if (err) return res.send(500, err.message);
+
+                                res.status(200).jsonp("deleted");
+                            });
+                        }
+                    });
+            }
+        });
+};
+
+function isNodeInNodes(node, nodes) {
+    for (var i = 0; i < nodes.length; i++) {
+        if (node.title == nodes[i].title) {
+            return (i);
         }
     }
-    return(-1);
+    return (-1);
 }
 exports.network = function(req, res) {
-    userModel.find()
-        .limit(pageSize)
-        .skip(pageSize * Number(req.query.page))
-        .lean()
-        //.populate({path: 'travels', populate: {path: 'joins', populate: {path: 'username'}}})
-        .populate('travels', 'title type joins')
-        .populate('likes', 'username avatar')
-        .exec(function(err, users) {
-            if (err) return res.send(500, err.message);
+    adminModel.findOne({
+            'token': req.headers['x-access-token']
+        })
+        .exec(function(err, admin) {
+            if (!admin) {
+                res.json({
+                    success: false,
+                    message: 'Admin not found'
+                });
+            } else if (admin) {
+                if (err) return res.send(500, err.message);
+                userModel.find()
+                    .limit(pageSize)
+                    .skip(pageSize * Number(req.query.page))
+                    .lean()
+                    //.populate({path: 'travels', populate: {path: 'joins', populate: {path: 'username'}}})
+                    .populate('travels', 'title type joins')
+                    .populate('likes', 'username avatar')
+                    .exec(function(err, users) {
+                        if (err) return res.send(500, err.message);
 
-            /*res.status(200).jsonp(users);*/
-            var nodes=[];
-            var edges=[];
-            for (var i=0; i<users.length; i++){
-                var node = {
-                    title: users[i].username,
-                    label: users[i].username,
-                    image: users[i].avatar,
-                    shape: "image",
-                    id: users[i]._id,
-                    group: users[i]._id
-                };
-                var lNode = isNodeInNodes(node, nodes);
-                if (lNode<0){
-                    nodes.push(node);
-                    var uNode = nodes.length -1;
-                }
-                for(var j=0; j<users[i].likes.length; j++){
-                    /*console.log(i + ", " + j);
-                    console.log(nodes);*/
-                    var node = {
-                        title: users[i].likes[j].username,
-                        label: users[i].likes[j].username,
-                        image: users[i].likes[j].avatar,
-                        shape: "image",
-                        id: users[i].likes[j]._id
-                    };
-                    var lNode = isNodeInNodes(node, nodes);
-                    if (lNode<0){
-                        //node no exist
-                        nodes.push(node);
-                        lNode = nodes.length -1;
-                    }else{
-                        //node already exist
-
-                    }
-                    var edge={
-                        from: users[i]._id,
-                        to: users[i].likes[j]._id,
-                        arrows: "to",
-                        color: {
-                            color: "#E57373"//red300
-                        }
-                    };
-                    edges.push(edge);
-                }
-                for(var j=0; j<users[i].travels.length; j++){
-                    /*console.log(i + ", " + j);
-                    console.log(nodes);*/
-                    var node = {
-                        title: users[i].travels[j].title,
-                        label: users[i].travels[j].title,
-                        image: "img/" + users[i].travels[j].type + ".png",
-                        shape: "image",
-                        id: users[i].travels[j]._id,
-                        value: "0.5",
-                        group: users[i]._id
-                    };
-                    var lNode = isNodeInNodes(node, nodes);
-                    if (lNode<0){
-                        //node no exist
-                        nodes.push(node);
-                        lNode = nodes.length -1;
-                    }else{
-                        //node already exist
-
-                    }
-                    var edge={
-                        from: users[i]._id,
-                        to: users[i].travels[j]._id
-                    };
-                    edges.push(edge);
-
-                    //users joining travels
-                    /*for(var k=0; k<users[i].travels[j].joins.length; k++){
-                        var node = {
-                            title: users[i].travels[j].joins[k].username,
-                            label: users[i].travels[j].joins[k].username,
-                            image: users[i].travels[j].joins[k].avatar,
-                            shape: "image",
-                            id: users[i].travels[j].joins[k]._id
-                        };
-                        var lNode = isNodeInNodes(node, nodes);
-                        if (lNode<0){
-                            //node no exist
-                            nodes.push(node);
-                            lNode = nodes.length -1;
-                        }
-                        var edge={
-                            from: users[i].travels[j].joins[k]._id,
-                            to: users[i].travels[j]._id,
-                            color: {
-                                color: "#4DD0E1"//cyan300
+                        /*res.status(200).jsonp(users);*/
+                        var nodes = [];
+                        var edges = [];
+                        for (var i = 0; i < users.length; i++) {
+                            var node = {
+                                title: users[i].username,
+                                label: users[i].username,
+                                image: users[i].avatar,
+                                shape: "image",
+                                id: users[i]._id,
+                                group: users[i]._id
+                            };
+                            var lNode = isNodeInNodes(node, nodes);
+                            if (lNode < 0) {
+                                nodes.push(node);
+                                var uNode = nodes.length - 1;
                             }
-                        };
-                        edges.push(edge);
-                    }*/
-                }
+                            for (var j = 0; j < users[i].likes.length; j++) {
+                                /*console.log(i + ", " + j);
+                                console.log(nodes);*/
+                                var node = {
+                                    title: users[i].likes[j].username,
+                                    label: users[i].likes[j].username,
+                                    image: users[i].likes[j].avatar,
+                                    shape: "image",
+                                    id: users[i].likes[j]._id
+                                };
+                                var lNode = isNodeInNodes(node, nodes);
+                                if (lNode < 0) {
+                                    //node no exist
+                                    nodes.push(node);
+                                    lNode = nodes.length - 1;
+                                } else {
+                                    //node already exist
 
+                                }
+                                var edge = {
+                                    from: users[i]._id,
+                                    to: users[i].likes[j]._id,
+                                    arrows: "to",
+                                    color: {
+                                        color: "#E57373" //red300
+                                    }
+                                };
+                                edges.push(edge);
+                            }
+                            for (var j = 0; j < users[i].travels.length; j++) {
+                                /*console.log(i + ", " + j);
+                                console.log(nodes);*/
+                                var node = {
+                                    title: users[i].travels[j].title,
+                                    label: users[i].travels[j].title,
+                                    image: "img/" + users[i].travels[j].type + ".png",
+                                    shape: "image",
+                                    id: users[i].travels[j]._id,
+                                    value: "0.5",
+                                    group: users[i]._id
+                                };
+                                var lNode = isNodeInNodes(node, nodes);
+                                if (lNode < 0) {
+                                    //node no exist
+                                    nodes.push(node);
+                                    lNode = nodes.length - 1;
+                                } else {
+                                    //node already exist
+
+                                }
+                                var edge = {
+                                    from: users[i]._id,
+                                    to: users[i].travels[j]._id
+                                };
+                                edges.push(edge);
+
+                                //users joining travels
+                                /*for(var k=0; k<users[i].travels[j].joins.length; k++){
+                                    var node = {
+                                        title: users[i].travels[j].joins[k].username,
+                                        label: users[i].travels[j].joins[k].username,
+                                        image: users[i].travels[j].joins[k].avatar,
+                                        shape: "image",
+                                        id: users[i].travels[j].joins[k]._id
+                                    };
+                                    var lNode = isNodeInNodes(node, nodes);
+                                    if (lNode<0){
+                                        //node no exist
+                                        nodes.push(node);
+                                        lNode = nodes.length -1;
+                                    }
+                                    var edge={
+                                        from: users[i].travels[j].joins[k]._id,
+                                        to: users[i].travels[j]._id,
+                                        color: {
+                                            color: "#4DD0E1"//cyan300
+                                        }
+                                    };
+                                    edges.push(edge);
+                                }*/
+                            }
+
+                        }
+                        var resp = {
+                            nodes: nodes,
+                            edges: edges
+                        };
+                        res.status(200).jsonp(resp);
+                    });
             }
-            var resp = {
-                nodes: nodes,
-                edges: edges
-            };
-            res.status(200).jsonp(resp);
         });
 };
