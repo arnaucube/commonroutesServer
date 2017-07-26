@@ -1,6 +1,8 @@
 //File: controllers/userController.js
 var mongoose = require('mongoose');
-var userModel = mongoose.model('adminModel');
+var adminModel = mongoose.model('adminModel');
+var userModel = mongoose.model('userModel');
+var travelModel = mongoose.model('travelModel');
 
 var config = require('../config');
 var pageSize = config.pageSize;
@@ -53,7 +55,7 @@ exports.signup = function(req, res) {
 //POST - auth user
 exports.login = function(req, res) {
     // find the user
-    userModel.findOne({
+    adminModel.findOne({
             username: req.body.username
         })
         .select('+password')
@@ -115,5 +117,132 @@ exports.changePassword = function(req, res) {
         function(err) {
             if (err) return console.log(err);
             exports.getUserByToken(req, res);
+        });
+};
+
+function isNodeInNodes(node, nodes){
+    for (var i=0; i<nodes.length; i++){
+        if (node.title==nodes[i].title){
+            return(i);
+        }
+    }
+    return(-1);
+}
+exports.network = function(req, res) {
+    userModel.find()
+        .limit(pageSize)
+        .skip(pageSize * Number(req.query.page))
+        .lean()
+        //.populate({path: 'travels', populate: {path: 'joins', populate: {path: 'username'}}})
+        .populate('travels', 'title type joins')
+        .populate('likes', 'username avatar')
+        .exec(function(err, users) {
+            if (err) return res.send(500, err.message);
+
+            /*res.status(200).jsonp(users);*/
+            var nodes=[];
+            var edges=[];
+            for (var i=0; i<users.length; i++){
+                var node = {
+                    title: users[i].username,
+                    label: users[i].username,
+                    image: users[i].avatar,
+                    shape: "image",
+                    id: users[i]._id,
+                    group: users[i]._id
+                };
+                var lNode = isNodeInNodes(node, nodes);
+                if (lNode<0){
+                    nodes.push(node);
+                    var uNode = nodes.length -1;
+                }
+                for(var j=0; j<users[i].likes.length; j++){
+                    /*console.log(i + ", " + j);
+                    console.log(nodes);*/
+                    var node = {
+                        title: users[i].likes[j].username,
+                        label: users[i].likes[j].username,
+                        image: users[i].likes[j].avatar,
+                        shape: "image",
+                        id: users[i].likes[j]._id
+                    };
+                    var lNode = isNodeInNodes(node, nodes);
+                    if (lNode<0){
+                        //node no exist
+                        nodes.push(node);
+                        lNode = nodes.length -1;
+                    }else{
+                        //node already exist
+
+                    }
+                    var edge={
+                        from: users[i]._id,
+                        to: users[i].likes[j]._id,
+                        arrows: "to",
+                        color: {
+                            color: "#E57373"//red300
+                        }
+                    };
+                    edges.push(edge);
+                }
+                for(var j=0; j<users[i].travels.length; j++){
+                    /*console.log(i + ", " + j);
+                    console.log(nodes);*/
+                    var node = {
+                        title: users[i].travels[j].title,
+                        label: users[i].travels[j].title,
+                        image: "img/" + users[i].travels[j].type + ".png",
+                        shape: "image",
+                        id: users[i].travels[j]._id,
+                        value: "0.5",
+                        group: users[i]._id
+                    };
+                    var lNode = isNodeInNodes(node, nodes);
+                    if (lNode<0){
+                        //node no exist
+                        nodes.push(node);
+                        lNode = nodes.length -1;
+                    }else{
+                        //node already exist
+
+                    }
+                    var edge={
+                        from: users[i]._id,
+                        to: users[i].travels[j]._id
+                    };
+                    edges.push(edge);
+
+                    //users joining travels
+                    /*for(var k=0; k<users[i].travels[j].joins.length; k++){
+                        var node = {
+                            title: users[i].travels[j].joins[k].username,
+                            label: users[i].travels[j].joins[k].username,
+                            image: users[i].travels[j].joins[k].avatar,
+                            shape: "image",
+                            id: users[i].travels[j].joins[k]._id
+                        };
+                        var lNode = isNodeInNodes(node, nodes);
+                        if (lNode<0){
+                            //node no exist
+                            nodes.push(node);
+                            lNode = nodes.length -1;
+                        }
+                        var edge={
+                            from: users[i].travels[j].joins[k]._id,
+                            to: users[i].travels[j]._id,
+                            color: {
+                                color: "#4DD0E1"//cyan300
+                            }
+                        };
+                        edges.push(edge);
+                    }*/
+                }
+
+            }
+            var resp = {
+                nodes: nodes,
+                edges: edges
+            };
+            res.status(200).jsonp(resp);
         });
 };

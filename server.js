@@ -115,6 +115,9 @@ apiRoutes.use(function(req, res, next) {
     }
 }); //fi verificació de token
 
+//admin
+apiRoutes.route('/admin/network')
+    .get(adminCtrl.network);
 
 apiRoutes.route('/search/:searchstring')
     .get(searchCtrl.searchByString);
