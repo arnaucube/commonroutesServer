@@ -77,6 +77,8 @@ apiRoutes.route('/travels/id/:travelid')
 
 apiRoutes.route('/admin/login')
     .post(adminCtrl.login);
+apiRoutes.route('/admin/signup')
+    .post(adminCtrl.signup);
 
 // OJU AQUÏ TREC la verificació de token temporalment, per fer les proves des de l'app
 // route middleware to verify a token

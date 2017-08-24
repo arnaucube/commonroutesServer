@@ -7,6 +7,7 @@ var travelModel = mongoose.model('travelModel');
 var travelCtrl = require('../controllers/travelController');
 
 var config = require('../config');
+var adminConfig = require('../adminConfig'); // get our config file
 var pageSize = config.pageSize;
 
 /* */
@@ -24,29 +25,29 @@ var request = require('request');
 
 //POST - Insert a new User in the DB
 exports.signup = function(req, res) {
-    //get random avatar
-    var r = getRand(1, 10);
-    randAvatar = getAvatar(r);
 
 
-    var user = new userModel({
+    var admin = new adminModel({
         username: req.body.username,
         password: crypto.createHash('sha256').update(req.body.password).digest('base64'),
-        description: req.body.description,
-        avatar: randAvatar,
         email: req.body.email,
         phone: req.body.phone,
         telegram: req.body.telegram
     });
-    if (user.username == undefined) {
+    if (admin.username == undefined) {
         return res.status(500).jsonp("empty inputs");
-    } else if (user.password == undefined) {
+    } else if (admin.password == undefined) {
         return res.status(500).jsonp("empty inputs");
-    } else if (user.email == undefined) {
+    } else if (admin.email == undefined) {
         return res.status(500).jsonp("empty inputs");
     }
-
-    user.save(function(err, user) {
+    adminPasswordGetted = crypto.createHash('sha256').update(req.body.adminPassword).digest('base64');
+    console.log(adminPasswordGetted);
+    console.log(adminConfig.passwordHash);
+    if (adminPasswordGetted != adminConfig.passwordHash) {
+        return res.status(500).jsonp("admin password not valid");
+    }
+    admin.save(function(err, admin) {
         if (err) return res.send(500, err.message);
 
         exports.login(req, res);
