@@ -15,7 +15,7 @@ exports.getAllTravels = function(req, res) {
     .limit(pageSize)
     .skip(pageSize * Number(req.query.page))
     .lean()
-    .populate('user', 'username avatar')
+    .populate('user', 'username avatar validated')
     .exec(function (err, travels) {
         if (err) return res.send(500, err.message);
         res.status(200).jsonp(travels);
@@ -25,7 +25,7 @@ exports.getAllTravels = function(req, res) {
 exports.getTravelById = function (req, res) {
     travelModel.findOne({_id: req.params.travelid})
     .lean()
-    .populate('user', 'username avatar telegram phone')
+    .populate('user', 'username avatar validated telegram phone')
     .populate('joins', 'username avatar')
     .populate('joinPetitions', 'username avatar')
     .populate('comments', 'comment user')

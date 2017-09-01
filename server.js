@@ -126,6 +126,10 @@ apiRoutes.route('/admin/travels/id/:travelid')
     .delete(adminCtrl.deleteTravel);
 apiRoutes.route('/admin/users/id/:userid')
     .delete(adminCtrl.deleteUser);
+apiRoutes.route('/admin/users/validate/id/:userid')
+    .post(adminCtrl.validateUser);
+apiRoutes.route('/admin/users/unvalidate/id/:userid')
+    .post(adminCtrl.unvalidateUser);
 
 apiRoutes.route('/search/:searchstring')
     .get(searchCtrl.searchByString);

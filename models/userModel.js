@@ -15,6 +15,7 @@ var userSchema = new Schema({
     email:   { type: String, required: true },
     phone: { type: String },
     telegram: { type: String },
+    validated: { type: Boolean, default: false },
     valorations: [{
         user: {
             type: mongoose.Schema.Types.ObjectId,

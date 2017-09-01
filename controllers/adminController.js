@@ -2,6 +2,7 @@
 var mongoose = require('mongoose');
 var adminModel = mongoose.model('adminModel');
 var userModel = mongoose.model('userModel');
+var userController = require('../controllers/userController');
 var notificationModel = mongoose.model('notificationModel');
 var travelModel = mongoose.model('travelModel');
 var travelCtrl = require('../controllers/travelController');
@@ -388,124 +389,182 @@ exports.getUserNetwork = function(req, res) {
                         var nodes = [];
                         var edges = [];
                         //for (var i = 0; i < users.length; i++) {
+                        var node = {
+                            title: user.username,
+                            label: user.username,
+                            image: user.avatar,
+                            shape: "image",
+                            id: user._id,
+                            group: user._id
+                        };
+                        var lNode = isNodeInNodes(node, nodes);
+                        if (lNode < 0) {
+                            nodes.push(node);
+                            var uNode = nodes.length - 1;
+                        }
+                        for (var j = 0; j < user.likes.length; j++) {
+                            /*console.log(i + ", " + j);
+                            console.log(nodes);*/
                             var node = {
-                                title: user.username,
-                                label: user.username,
-                                image: user.avatar,
+                                title: user.likes[j].username,
+                                label: user.likes[j].username,
+                                image: user.likes[j].avatar,
                                 shape: "image",
-                                id: user._id,
+                                id: user.likes[j]._id
+                            };
+                            var lNode = isNodeInNodes(node, nodes);
+                            if (lNode < 0) {
+                                //node no exist
+                                nodes.push(node);
+                                lNode = nodes.length - 1;
+                            } else {
+                                //node already exist
+
+                            }
+                            var edge = {
+                                from: user._id,
+                                to: user.likes[j]._id,
+                                label: "like",
+                                arrows: "to",
+                                color: {
+                                    color: "#E57373" //red300
+                                }
+                            };
+                            edges.push(edge);
+                        }
+                        for (var j = 0; j < user.travels.length; j++) {
+                            /*console.log(i + ", " + j);
+                            console.log(nodes);*/
+                            var node = {
+                                title: user.travels[j].title,
+                                label: user.travels[j].title,
+                                image: "img/" + user.travels[j].type + ".png",
+                                shape: "image",
+                                id: user.travels[j]._id,
+                                value: "0.5",
                                 group: user._id
                             };
                             var lNode = isNodeInNodes(node, nodes);
                             if (lNode < 0) {
+                                //node no exist
                                 nodes.push(node);
-                                var uNode = nodes.length - 1;
-                            }
-                            for (var j = 0; j < user.likes.length; j++) {
-                                /*console.log(i + ", " + j);
-                                console.log(nodes);*/
-                                var node = {
-                                    title: user.likes[j].username,
-                                    label: user.likes[j].username,
-                                    image: user.likes[j].avatar,
-                                    shape: "image",
-                                    id: user.likes[j]._id
-                                };
-                                var lNode = isNodeInNodes(node, nodes);
-                                if (lNode < 0) {
-                                    //node no exist
-                                    nodes.push(node);
-                                    lNode = nodes.length - 1;
-                                } else {
-                                    //node already exist
+                                lNode = nodes.length - 1;
+                            } else {
+                                //node already exist
 
+                            }
+                            var edge = {
+                                from: user._id,
+                                to: user.travels[j]._id,
+                                color: {
+                                    color: "#616161" //grey
                                 }
-                                var edge = {
-                                    from: user._id,
-                                    to: user.likes[j]._id,
-                                    label: "like",
-                                    arrows: "to",
-                                    color: {
-                                        color: "#E57373" //red300
-                                    }
-                                };
-                                edges.push(edge);
-                            }
-                            for (var j = 0; j < user.travels.length; j++) {
-                                /*console.log(i + ", " + j);
-                                console.log(nodes);*/
-                                var node = {
-                                    title: user.travels[j].title,
-                                    label: user.travels[j].title,
-                                    image: "img/" + user.travels[j].type + ".png",
-                                    shape: "image",
-                                    id: user.travels[j]._id,
-                                    value: "0.5",
-                                    group: user._id
-                                };
-                                var lNode = isNodeInNodes(node, nodes);
-                                if (lNode < 0) {
-                                    //node no exist
-                                    nodes.push(node);
-                                    lNode = nodes.length - 1;
-                                } else {
-                                    //node already exist
-
-                                }
-                                var edge = {
-                                    from: user._id,
-                                    to: user.travels[j]._id,
-                                    color: {
-                                        color: "#616161" //grey
-                                    }
-                                };
-                                edges.push(edge);
-                            }
-                            //add users that has add like to the user
-                            userModel.find({
-                                    likes: req.params.userid
-                                })
-                                .exec(function(err, users) {
-                                    for (var i = 0; i < users.length; i++) {
-                                        /*console.log(i + ", " + j);
-                                        console.log(nodes);*/
-                                        var node = {
-                                            title: users[i].username,
-                                            label: users[i].username,
-                                            image: users[i].avatar,
-                                            shape: "image",
-                                            id: users[i]._id
-                                        };
-                                        var lNode = isNodeInNodes(node, nodes);
-                                        if (lNode < 0) {
-                                            //node no exist
-                                            nodes.push(node);
-                                            lNode = nodes.length - 1;
-                                        } else {
-                                            //node already exist
-
-                                        }
-                                        var edge = {
-                                            from: users[i]._id,
-                                            to: req.params.userid,
-                                            label: "like",
-                                            arrows: "to",
-                                            color: {
-                                                color: "#E57373" //red300
-                                            }
-                                        };
-                                        edges.push(edge);
-                                    }
-
-                                    var resp = {
-                                        nodes: nodes,
-                                        edges: edges
+                            };
+                            edges.push(edge);
+                        }
+                        //add users that has add like to the user
+                        userModel.find({
+                                likes: req.params.userid
+                            })
+                            .exec(function(err, users) {
+                                for (var i = 0; i < users.length; i++) {
+                                    /*console.log(i + ", " + j);
+                                    console.log(nodes);*/
+                                    var node = {
+                                        title: users[i].username,
+                                        label: users[i].username,
+                                        image: users[i].avatar,
+                                        shape: "image",
+                                        id: users[i]._id
                                     };
-                                    res.status(200).jsonp(resp);
-                                });
+                                    var lNode = isNodeInNodes(node, nodes);
+                                    if (lNode < 0) {
+                                        //node no exist
+                                        nodes.push(node);
+                                        lNode = nodes.length - 1;
+                                    } else {
+                                        //node already exist
+
+                                    }
+                                    var edge = {
+                                        from: users[i]._id,
+                                        to: req.params.userid,
+                                        label: "like",
+                                        arrows: "to",
+                                        color: {
+                                            color: "#E57373" //red300
+                                        }
+                                    };
+                                    edges.push(edge);
+                                }
+
+                                var resp = {
+                                    nodes: nodes,
+                                    edges: edges
+                                };
+                                res.status(200).jsonp(resp);
+                            });
 
                         //}
 
+                    });
+            }
+        });
+};
+
+
+// user validation
+exports.validateUser = function(req, res) {
+    adminModel.findOne({
+            'token': req.headers['x-access-token']
+        })
+        .exec(function(err, admin) {
+            if (!admin) {
+                res.json({
+                    success: false,
+                    message: 'Admin not found'
+                });
+            } else if (admin) {
+                if (err) return res.send(500, err.message);
+                userModel.findOne({
+                        _id: req.params.userid
+                    })
+                    .exec(function(err, user) {
+                        if (err) return res.send(500, err.message);
+                        user.validated = true;
+
+                        user.save(function(err, user) {
+                            if (err) return res.send(500, err.message);
+                            userController.getUserById(req, res);
+                        });
+                    });
+            }
+        });
+};
+// user unvalidate
+exports.unvalidateUser = function(req, res) {
+    adminModel.findOne({
+            'token': req.headers['x-access-token']
+        })
+        .exec(function(err, admin) {
+            if (!admin) {
+                res.json({
+                    success: false,
+                    message: 'Admin not found'
+                });
+            } else if (admin) {
+                if (err) return res.send(500, err.message);
+                userModel.findOne({
+                        _id: req.params.userid
+                    })
+                    .exec(function(err, user) {
+                        if (err) return res.send(500, err.message);
+                        user.validated = false;
+
+                        user.save(function(err, user) {
+                            if (err) return res.send(500, err.message);
+                            userController.getUserById(req, res);
+                        });
                     });
             }
         });

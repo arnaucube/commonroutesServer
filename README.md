@@ -30,6 +30,14 @@ code: https://github.com/arnaucode/carsincommonApp
 - https (tls/ssl)
 ```
 
+### Configuration before run:
+In the file adminConfig.js, put the sha256 of the password that allows to create new admins:
+```js
+module.exports = {
+    'passwordHash': 'Bzij4hEeEUpmXTWyS+X0LR+YcA8WFjP2P7qhW0sxA6s='/*password raw: adminPassword*/
+};
+```
+
 
 #### RESOURCES using:
 
