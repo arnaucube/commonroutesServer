@@ -12,10 +12,14 @@ var userSchema = new Schema({
     avatar:   { type: String, default: "img/avatars/racoon.png" },
     faircoinString:   { type: String, default: "faircoin wallet" },
     faircoin:   { type: String, default: "img/faircoinpublickey_sample.png" },
-    email:   { type: String, required: true },
+    email:   { type: String, required: true, select: false },
     phone: { type: String },
     telegram: { type: String },
     validated: { type: Boolean, default: false },
+    validatedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'adminModel'
+    },
     valorations: [{
         user: {
             type: mongoose.Schema.Types.ObjectId,

@@ -532,6 +532,7 @@ exports.validateUser = function(req, res) {
                     .exec(function(err, user) {
                         if (err) return res.send(500, err.message);
                         user.validated = true;
+                        user.validatedBy = admin._id;
 
                         user.save(function(err, user) {
                             if (err) return res.send(500, err.message);
@@ -560,6 +561,7 @@ exports.unvalidateUser = function(req, res) {
                     .exec(function(err, user) {
                         if (err) return res.send(500, err.message);
                         user.validated = false;
+                        user.validatedBy = admin._id;
 
                         user.save(function(err, user) {
                             if (err) return res.send(500, err.message);

@@ -169,6 +169,7 @@ exports.getUserById = function(req, res) {
             _id: req.params.userid
         })
         .lean()
+        .populate('validatedBy', 'username')
         .populate('travels', 'title from to date type')
         .exec(function(err, user) {
             if (err) return res.send(500, err.message);
@@ -575,12 +576,32 @@ exports.doUnfav = function(req, res) {
     });
 };
 exports.changePassword = function(req, res) {
-    //if(req.body.)
-    userModel.update({
-            'token': req.headers['x-access-token']
-        }, req.body,
-        function(err) {
-            if (err) return console.log(err);
-            exports.getUserByToken(req, res);
+    console.log(req.body);
+    userModel.findOne({
+            'token': req.headers['x-access-token'],
+            'password': crypto.createHash('sha256').update(req.body.old).digest('base64')
+        })
+        .exec(function(err, user) {
+            if (err) return res.send(500, err.message);
+            if (!user) {
+                res.json({
+                    success: false,
+                    message: 'User not found.'
+                });
+            } else if (user) {
+                if (req.body.new1 != req.body.new2) {
+                    res.json({
+                        success: false,
+                        message: 'New passwords not match'
+                    });
+                }else{
+                    user.password = crypto.createHash('sha256').update(req.body.new1).digest('base64');
+                    user.save(function(err, user) {
+                        if (err) return res.send(500, err.message);
+
+                        exports.getUserByToken(req, res);
+                    });
+                }
+            }
         });
 };
