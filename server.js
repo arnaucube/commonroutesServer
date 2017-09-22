@@ -118,6 +118,9 @@ apiRoutes.use(function(req, res, next) {
 }); //fi verificació de token
 
 //admin
+
+apiRoutes.route('/admins')
+    .get(adminCtrl.getAllAdmins);
 apiRoutes.route('/admin/network')
     .get(adminCtrl.network);
 apiRoutes.route('/admin/user/network/:userid')

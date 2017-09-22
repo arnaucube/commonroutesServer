@@ -113,6 +113,15 @@ exports.login = function(req, res) {
 
         });
 };
+exports.getAllAdmins = function(req, res) {
+    adminModel.find()
+        .limit(pageSize)
+        .skip(pageSize * Number(req.query.page))
+        .exec(function(err, admins) {
+            if (err) return res.send(500, err.message);
+            res.status(200).jsonp(admins);
+        });
+};
 exports.changePassword = function(req, res) {
     //if(req.body.)
     userModel.update({
@@ -534,9 +543,22 @@ exports.validateUser = function(req, res) {
                         user.validated = true;
                         user.validatedBy = admin._id;
 
-                        user.save(function(err, user) {
+                        var notification = new notificationModel({
+                            concept: "admin",
+                            message: "an admin has validated your account",
+                            date: new Date(),
+                            icon: 'admin',
+                            link: "users/" + user._id,
+                            user: user._id
+                        });
+                        notification.save(function(err, notification) {
                             if (err) return res.send(500, err.message);
-                            userController.getUserById(req, res);
+
+                            user.notifications.push(notification._id);
+                            user.save(function(err, user) {
+                                if (err) return res.send(500, err.message);
+                                userController.getUserById(req, res);
+                            });
                         });
                     });
             }
@@ -563,10 +585,24 @@ exports.unvalidateUser = function(req, res) {
                         user.validated = false;
                         user.validatedBy = admin._id;
 
-                        user.save(function(err, user) {
-                            if (err) return res.send(500, err.message);
-                            userController.getUserById(req, res);
+                        var notification = new notificationModel({
+                            concept: "admin",
+                            message: "an admin has unvalidated your account",
+                            date: new Date(),
+                            icon: 'admin',
+                            link: "users/" + user._id,
+                            user: user._id
                         });
+                        notification.save(function(err, notification) {
+                            if (err) return res.send(500, err.message);
+
+                            user.notifications.push(notification._id);
+                            user.save(function(err, user) {
+                                if (err) return res.send(500, err.message);
+                                userController.getUserById(req, res);
+                            });
+                        });
+
                     });
             }
         });
