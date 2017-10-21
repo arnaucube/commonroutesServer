@@ -22,6 +22,7 @@
     "mongoose": "latest",
     "mongoose-unique-validator": "^1.0.2",
     "morgan": "latest",
+    "readline-sync": "^1.4.7",
     "request": "^2.81.0"
   }
 }
