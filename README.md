@@ -1,5 +1,13 @@
 # commonroutesServer
 
+- Current status:
+    - Server and App almost done, need to finish details.
+    - Not having time to develop. I'll try to finish a first stable and usable version.
+- Future plans:
+    - If somebody can do the frontend, I can focus on implementing the backend in Go lang
+
+---
+
 - server code: https://github.com/arnaucode/commonroutesServer
 - frontend app code: https://github.com/arnaucode/commonroutesApp
 - frontend webapp code: https://github.com/arnaucode/commonroutesWebApp
