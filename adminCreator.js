@@ -2,31 +2,34 @@
 var mongoose = require('mongoose');
 
 var config = require('./config');
-var adminConfig = require('./adminConfig'); // get our config file
+//var adminConfig = require('./adminConfig'); // get our config file
 
 mongoose.Promise = global.Promise;
 // Connection to DB
 mongoose.connect(config.database, function(err, res) {
-    if (err) throw err;
+    if (err) {
+        console.log(err);
+    };
     console.log('Connected to Database');
 });
 
-
+var express = require("express");
+var app = express();
 var adminMdl = require('./models/adminModel')(app, mongoose);
 var adminModel = mongoose.model('adminModel');
 
 
 /* */
-var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+/*var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var express = require("express");
-var app = express();
 var config = require('./config'); // get our config file
 app.set('superSecret', config.secret); // secret variable
+var request = require('request');*/
 
 var crypto = require('crypto');
 /* */
 
-var request = require('request');
+
 
 var readlineSync = require('readline-sync');
 
@@ -84,4 +87,3 @@ admin.save(function(err, admin) {
     console.log("admin created correctly");
     process.exit(0);
 });
-process.exit(0);

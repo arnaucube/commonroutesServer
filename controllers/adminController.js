@@ -8,7 +8,7 @@ var travelModel = mongoose.model('travelModel');
 var travelCtrl = require('../controllers/travelController');
 
 var config = require('../config');
-var adminConfig = require('../adminConfig'); // get our config file
+//var adminConfig = require('../adminConfig'); // get our config file
 var pageSize = config.pageSize;
 
 /* */
@@ -25,7 +25,7 @@ var request = require('request');
 
 
 //POST - Insert a new User in the DB
-exports.signup = function(req, res) {
+/*exports.signup = function(req, res) {
 
 
     var admin = new adminModel({
@@ -53,7 +53,7 @@ exports.signup = function(req, res) {
 
         exports.login(req, res);
     });
-};
+};*/
 
 
 //POST - auth user

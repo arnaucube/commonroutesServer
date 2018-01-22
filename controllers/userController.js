@@ -576,7 +576,6 @@ exports.doUnfav = function(req, res) {
     });
 };
 exports.changePassword = function(req, res) {
-    console.log(req.body);
     userModel.findOne({
             'token': req.headers['x-access-token'],
             'password': crypto.createHash('sha256').update(req.body.old).digest('base64')
