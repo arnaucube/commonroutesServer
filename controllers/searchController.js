@@ -1,28 +1,22 @@
-//File: controllers/userController.js
+var config = require('../config');
+var pageSize=config.pageSize;
+
+var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var express = require("express");
+var app = express();
+app.set('superSecret', config.secret); // secret variable
+
+var crypto = require('crypto');
 var mongoose = require('mongoose');
 var userModel = mongoose.model('userModel');
 var notificationModel  = mongoose.model('notificationModel');
 var travelModel  = mongoose.model('travelModel');
 
-var config = require('../config');
-var pageSize=config.pageSize;
-
-/* */
-var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
-var express = require("express");
-var app = express();
-var config = require('../config'); // get our config file
-app.set('superSecret', config.secret); // secret variable
-
-var crypto = require('crypto');
-/* */
-
-
 exports.searchByString = function (req, res) {
     console.log(req.params.searchstring);
     userModel.find({
         username: new RegExp(req.params.searchstring, "i")
-    })//perquè retorni tots els objectes que continguin l'string sense necessitat de que sigui exactament la mateixa string
+    })//to return all the objects containing the string, having exactly the same string
         .limit(pageSize)
         .skip(pageSize * Number(req.query.page))
         .lean()
@@ -35,7 +29,7 @@ exports.searchByString = function (req, res) {
                     {'to.name': new RegExp(req.params.searchstring, "i")},
                     {title: new RegExp(req.params.searchstring, "i")}
                 ]
-            })//perquè retorni tots els objectes que continguin l'string sense necessitat de que sigui exactament la mateixa string
+            })//to return all the objects containing the string, without need of having the same string
                 .limit(pageSize)
                 .skip(pageSize * Number(req.query.page))
                 .lean()

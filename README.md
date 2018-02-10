@@ -2,9 +2,15 @@
 
 - Current status:
     - Server and App almost done, need to finish details.
-    - Not having time to develop. I'll try to finish a first stable and usable version.
+    - I'm focusing on having a first stable and usable version
+    - The plan is to have the first stable version in the middle of February 2018
+- Comments:
+  - the code is not a good quality code, as:
+    - it was developed in a discontinued way
+    - in the process I learned stuff that I didn't know at the beginning
 - Future plans:
-    - If somebody can do the frontend, I can focus on implementing the backend in Go lang
+  - If somebody can do the frontend, maybe we can implement the frontend app in React
+  - I can focus on implementing the backend in Go lang
 
 ---
 

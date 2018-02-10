@@ -15,6 +15,7 @@ var userSchema = new Schema({
     email:   { type: String, required: true, select: false },
     phone: { type: String },
     telegram: { type: String },
+    localNode: { type: String },
     validated: { type: Boolean, default: false },
     validatedBy: {
         type: mongoose.Schema.Types.ObjectId,

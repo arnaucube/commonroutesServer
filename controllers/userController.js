@@ -1,28 +1,28 @@
-//File: controllers/userController.js
+var config = require('../config');
+var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var crypto = require('crypto');
+var request = require('request');
+var express = require("express");
+var app = express();
+app.set('superSecret', config.secret); // secret variable
+
+var pageSize = config.pageSize;
+
+//import data models
 var mongoose = require('mongoose');
 var userModel = mongoose.model('userModel');
 var notificationModel = mongoose.model('notificationModel');
 var travelModel = mongoose.model('travelModel');
 
-var config = require('../config');
-var pageSize = config.pageSize;
-
-/* */
-var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
-var express = require("express");
-var app = express();
-var config = require('../config'); // get our config file
-app.set('superSecret', config.secret); // secret variable
-
-var crypto = require('crypto');
-/* */
-
-var request = require('request');
-
-function getRand(min, max) {
+function getRand(min, max) {//inclusive
     min = Math.ceil(min);
     max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function getRandomInt(min, max) {//the maximum is exclusive and the minimum is inclusive
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
 }
 
 function getAvatar(n) {
@@ -68,7 +68,7 @@ exports.signup = function(req, res) {
     //get random avatar
     var r = getRand(1, 10);
     randAvatar = getAvatar(r);
-
+    console.log(req.body);
 
     var user = new userModel({
         username: req.body.username,
@@ -77,7 +77,8 @@ exports.signup = function(req, res) {
         avatar: randAvatar,
         email: req.body.email,
         phone: req.body.phone,
-        telegram: req.body.telegram
+        telegram: req.body.telegram,
+        localNode: req.body.localNode
     });
     if (user.username == undefined) {
         return res.status(500).jsonp("empty inputs");
@@ -89,7 +90,6 @@ exports.signup = function(req, res) {
 
     user.save(function(err, user) {
         if (err) return res.send(500, err.message);
-
         exports.login(req, res);
     });
 };
@@ -134,8 +134,6 @@ exports.login = function(req, res) {
                     user.token = token;
                     user.save(function(err, user) {
                         if (err) return res.send(500, err.message);
-                        //res.status(200).jsonp(travel);
-                        console.log(user);
                         // return the information including token as JSON
                         user.password = "";
                         res.json({
@@ -183,6 +181,7 @@ exports.getUserById = function(req, res) {
             }
         });
 };
+
 exports.getUserByToken = function(req, res) {
     userModel.findOne({
             'token': req.headers['x-access-token']
@@ -254,7 +253,6 @@ exports.getNumNotificationsByToken = function(req, res) {
                     message: 'User not found.'
                 });
             } else if (user) {
-
                 res.status(200).jsonp(user.notifications);
             }
         });
@@ -273,7 +271,6 @@ exports.getNotifications = function(req, res) {
                     message: 'User not found.'
                 });
             } else if (user) {
-
                 notificationModel.find({
                         'user': user._id,
                         'state': 'pendent'
@@ -287,7 +284,7 @@ exports.getNotifications = function(req, res) {
                                 message: 'No pendent notifications.'
                             });
                         } else if (notifications) {
-                            //here, maybe in the future is better delete the viewed notifications
+                            //here, maybe in the future is better delete the viewed notifications, for the moment let's keep in the database
                             notificationModel.update({
                                     state: "pendent"
                                 }, {
@@ -320,12 +317,6 @@ exports.getNotifications = function(req, res) {
             }
         });
 };
-
-function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
-}
 
 function postImage(req, res, filename, fileImg) {
     url = "http://127.0.0.1:3050/image";
@@ -361,19 +352,9 @@ exports.updateUser = function(req, res) {
     if (req.body.newAvatar) {
         urlImg = postImage(req, res, "avatar_" + req.body.username, req.body.newAvatar);
     }
-    /*if (req.body.newFaircoin) {
-        urlImg = postImage(req, res, "fairdir_"+req.body.username,req.body.newFaircoin);
-    }*/
     if (!req.body.newAvatar) {
         updateUserWithNewImages(req, res, req.body.avatar);
     }
-    /*userModel.update({
-            'token': req.headers['x-access-token']
-        }, req.body,
-        function(err) {
-            if (err) return console.log(err);
-            exports.getUserByToken(req, res);
-        });*/
 };
 
 //DELETE - Delete a user with specified ID
@@ -392,7 +373,7 @@ exports.likeUser = function(req, res) {
     userModel.findOne({
             'token': req.headers['x-access-token']
         })
-        .exec(function(err, userL) {
+        .exec(function(err, userL) {//userL is the user that is performing the like
             if (err) return res.send(500, err.message);
             if (!userL) {
                 res.json({
@@ -400,7 +381,6 @@ exports.likeUser = function(req, res) {
                     message: 'no user with that token, login again'
                 });
             } else if (userL) {
-
                 userModel.findOne({
                         _id: req.params.userid,
                         likes: {
@@ -415,7 +395,6 @@ exports.likeUser = function(req, res) {
                                 message: 'Like not posible, user not exist, or like was already done'
                             });
                         } else if (user) {
-                            //res.status(200).jsonp(user);
                             var notification = new notificationModel({
                                 concept: "like",
                                 message: "user " + userL.username + " adds a like to you",
@@ -445,7 +424,7 @@ exports.unlikeUser = function(req, res) {
     userModel.findOne({
             'token': req.headers['x-access-token']
         })
-        .exec(function(err, userL) {
+        .exec(function(err, userL) {//userL is the user that is performing the unlike
             if (err) return res.send(500, err.message);
             if (!userL) {
                 res.json({
@@ -453,7 +432,6 @@ exports.unlikeUser = function(req, res) {
                     message: 'no user with that token, login again'
                 });
             } else if (userL) {
-
                 userModel.findOne({
                         _id: req.params.userid,
                         likes: userL._id
@@ -466,7 +444,6 @@ exports.unlikeUser = function(req, res) {
                                 message: 'Unlike not posible'
                             });
                         } else if (user) {
-                            //res.status(200).jsonp(user);
                             var notification = new notificationModel({
                                 concept: "like",
                                 message: "user " + userL.username + " removes like on you",
@@ -493,7 +470,8 @@ exports.unlikeUser = function(req, res) {
             } //end of else if userL
         });
 };
-/* fav */
+
+//currently not used
 exports.addFav = function(req, res) {
     var tokenuser;
     userModel.find({
@@ -550,6 +528,7 @@ exports.addFav = function(req, res) {
 
     });
 };
+//currently not used
 exports.doUnfav = function(req, res) {
     var tokenuser;
     userModel.find({
@@ -575,6 +554,7 @@ exports.doUnfav = function(req, res) {
         });
     });
 };
+
 exports.changePassword = function(req, res) {
     userModel.findOne({
             'token': req.headers['x-access-token'],

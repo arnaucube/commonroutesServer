@@ -1,4 +1,14 @@
-//File: controllers/userController.js
+var config = require('../config');
+var pageSize = config.pageSize;
+
+var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var express = require("express");
+var app = express();
+app.set('superSecret', config.secret); // secret variable
+var crypto = require('crypto');
+var request = require('request');
+
+//data models
 var mongoose = require('mongoose');
 var adminModel = mongoose.model('adminModel');
 var userModel = mongoose.model('userModel');
@@ -6,23 +16,6 @@ var userController = require('../controllers/userController');
 var notificationModel = mongoose.model('notificationModel');
 var travelModel = mongoose.model('travelModel');
 var travelCtrl = require('../controllers/travelController');
-
-var config = require('../config');
-//var adminConfig = require('../adminConfig'); // get our config file
-var pageSize = config.pageSize;
-
-/* */
-var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
-var express = require("express");
-var app = express();
-var config = require('../config'); // get our config file
-app.set('superSecret', config.secret); // secret variable
-
-var crypto = require('crypto');
-/* */
-
-var request = require('request');
-
 
 //POST - Insert a new User in the DB
 /*exports.signup = function(req, res) {

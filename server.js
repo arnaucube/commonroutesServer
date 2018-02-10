@@ -18,11 +18,6 @@ mongoose.connect(config.database, function(err, res) {
 app.set('superSecret', config.secret); // secret variable
 
 // Middlewares
-/*app.use(bodyParser.urlencoded({
-    extended: false
-}));
-app.use(bodyParser.json());*/
-
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(methodOverride());
@@ -31,22 +26,19 @@ app.use(methodOverride());
 app.use(morgan('dev'));
 
 // Import Models and controllers
+/*
 var userMdl = require('./models/userModel')(app, mongoose);
-var notificationMdl = require('./models/notificationModel')(app, mongoose);
-var travelMdl = require('./models/travelModel')(app, mongoose);
-var commentMdl = require('./models/commentModel')(app, mongoose);
-var adminMdl = require('./models/adminModel')(app, mongoose);
+*/
+var userMdl = require('./models/userModel');
+var notificationMdl = require('./models/notificationModel');
+var travelMdl = require('./models/travelModel');
+var commentMdl = require('./models/commentModel');
+var adminMdl = require('./models/adminModel');
 var userCtrl = require('./controllers/userController');
 var searchCtrl = require('./controllers/searchController');
 var travelCtrl = require('./controllers/travelController');
 var adminCtrl = require('./controllers/adminController');
 
-/*// Example Route
-var router = express.Router();
-router.get('/', function(req, res) {
-  res.send("Hello world!");
-});
-app.use(router);*/
 app.use(express.static(__dirname + '/www'));
 
 
@@ -61,6 +53,7 @@ app.use(function(req, res, next) {
 // API routes ------------------------------------------------------
 var apiRoutes = express.Router();
 
+// public routes
 apiRoutes.route('/login')
     .post(userCtrl.login);
 apiRoutes.route('/signup')
@@ -80,16 +73,13 @@ apiRoutes.route('/admin/login')
 /*apiRoutes.route('/admin/signup')
     .post(adminCtrl.signup);*/
 
-// OJU AQUÏ TREC la verificació de token temporalment, per fer les proves des de l'app
-// route middleware to verify a token
-apiRoutes.use(function(req, res, next) {
 
+// route middleware to verify the token
+apiRoutes.use(function(req, res, next) {
     // check header or url parameters or post parameters for token
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
     // decode token
-    if (token) {
-        // verifies secret and checks exp
+    if (token) {// verifies secret and checks exp
         jwt.verify(token, app.get('superSecret'), function(err, decoded) {
             if (err) {
                 return res.send(204,
@@ -97,28 +87,25 @@ apiRoutes.use(function(req, res, next) {
                     success: false,
                     message: 'Failed to authenticate token.'
                 });
-            } else {
-                // if everything is good, save to request for use in other routes
+            } else {// if everything is good, save to request for use in other routes
                 req.decoded = decoded;
-                //console.log("decoded " + decoded);
                 next();
             }
         });
-
     } else {
-
-        // if there is no token
-        // return an error
+        // if there is no token, return an error
         return res.status(204).send({
             success: false,
             message: 'No token provided.'
         });
 
     }
-}); //fi verificació de token
+}); //end token verification middleware
 
-//admin
 
+// private routes (needs to be logged)
+
+//admin routes
 apiRoutes.route('/admins')
     .get(adminCtrl.getAllAdmins);
 apiRoutes.route('/admin/network')
@@ -134,12 +121,15 @@ apiRoutes.route('/admin/users/validate/id/:userid')
 apiRoutes.route('/admin/users/unvalidate/id/:userid')
     .post(adminCtrl.unvalidateUser);
 
+// general routes
 apiRoutes.route('/search/:searchstring')
     .get(searchCtrl.searchByString);
 apiRoutes.route('/numnotifications')
     .get(userCtrl.getNumNotificationsByToken);
 apiRoutes.route('/notifications')
     .get(userCtrl.getNotifications);
+
+// user routes
 apiRoutes.route('/users/token')
     .get(userCtrl.getUserByToken);
 apiRoutes.route('/users')//agafa l'user a partir del token
@@ -147,7 +137,14 @@ apiRoutes.route('/users')//agafa l'user a partir del token
     .delete(userCtrl.deleteUser);
 apiRoutes.route('/changePassword')//agafa l'user a partir del token
     .put(userCtrl.changePassword);
+apiRoutes.route('/users/id/likes/:userid')
+    .get(userCtrl.getUserLikes);
+apiRoutes.route('/users/id/like/:userid')
+    .post(userCtrl.likeUser);
+apiRoutes.route('/users/id/unlike/:userid')
+    .post(userCtrl.unlikeUser);
 
+//travels routes
 apiRoutes.route('/users/id/travels/:userid')
     .get(userCtrl.getTravelsByUserId);
 apiRoutes.route('/travels')
@@ -167,18 +164,10 @@ apiRoutes.route('/travels/acceptJoin/:travelid')
     .post(travelCtrl.acceptJoin);
 
 
-apiRoutes.route('/users/id/likes/:userid')
-    .get(userCtrl.getUserLikes);
-apiRoutes.route('/users/id/like/:userid')
-    .post(userCtrl.likeUser);
-apiRoutes.route('/users/id/unlike/:userid')
-    .post(userCtrl.unlikeUser);
 
-//FINS AQUÏ COMPROVAT
-
+//not yet used routes
 apiRoutes.route('/travels/comment/:travelid')
     .get(travelCtrl.getCommentsByTravelId);
-
 /*apiRoutes.route('/travels/join/:travelId')
     .post(travelCtrl.addJoin);
 apiRoutes.route('/travels/unjoin/:travelId')
@@ -196,6 +185,9 @@ apiRoutes.route('/users/:userId/unfav')
 
 apiRoutes.route('/travels/:travelId/comment')
     .post(travelCtrl.addComment);
+
+
+
 
 app.use('/api', apiRoutes);
 // end of API routes -------------------------------------

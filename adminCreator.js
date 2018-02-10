@@ -15,7 +15,7 @@ mongoose.connect(config.database, function(err, res) {
 
 var express = require("express");
 var app = express();
-var adminMdl = require('./models/adminModel')(app, mongoose);
+var adminMdl = require('./models/adminModel');
 var adminModel = mongoose.model('adminModel');
 
 

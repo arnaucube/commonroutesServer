@@ -1,13 +1,13 @@
-//File: controllers/travelController.js
+var config = require('../config');
+var pageSize=config.pageSize;
+
+//import data models
 var mongoose = require('mongoose');
 var userModel  = mongoose.model('userModel');
 var notificationModel  = mongoose.model('notificationModel');
 var travelModel  = mongoose.model('travelModel');
 var commentModel  = mongoose.model('commentModel');
 
-var config = require('../config');
-var pageSize=config.pageSize;
-//GET
 exports.getAllTravels = function(req, res) {
 	//get travels with futures dates ($gte - greater than and equal than)
 	travelModel.find({date: {$gte: new Date()}})
@@ -98,7 +98,6 @@ exports.updateTravel = function(req, res) {
     });
 };
 
-//DELETE
 exports.deleteTravel = function(req, res) {
 	userModel.findOne({'token': req.headers['x-access-token']})
 	.exec(function(err, user){
@@ -118,7 +117,7 @@ exports.deleteTravel = function(req, res) {
 	});
 };
 
-/* join */
+
 exports.addJoinPetition = function(req, res) {
 	userModel.findOne({'token': req.headers['x-access-token']})
 	.exec(function(err, userJoining){
@@ -205,9 +204,9 @@ exports.unJoin = function(req, res) {
 						.exec(function(err, user){
 							if (err) return res.send(500, err.message);
 							if (!user) {
-					            res.json({success: false, message: 'User not found.'});
-					        } else if (user) {
-							//notification
+				            res.json({success: false, message: 'User not found.'});
+				        } else if (user) {
+								//notification
 								var notification = new notificationModel({
 									concept: "unjoin",
 									message: "user "+userJoining.username+" unjoins your travel "+travel.title,
@@ -343,9 +342,9 @@ exports.acceptJoin = function(req, res) {
 						.exec(function(err, user){
 							if (err) return res.send(500, err.message);
 							if (!user) {
-					            res.json({success: false, message: 'User not found.'});
-					        } else if (user) {
-							//notification
+				            res.json({success: false, message: 'User not found.'});
+				        } else if (user) {
+								//notification
 								var notification = new notificationModel({
 									concept: "travel",
 									message: "user "+userOwner.username+" accepts your petition for "+travel.title,
@@ -437,8 +436,7 @@ exports.leave = function(req, res) {
 
 
 
-
-/* comment */
+//currently not used
 exports.addComment = function(req, res) {
 	/*var comment = new commentModel({
 		travelId: req.params.travelId,
@@ -499,7 +497,7 @@ exports.addComment = function(req, res) {
 		});
 	});//end of userModel.find
 };
-
+//currently not used
 exports.getCommentsByTravelId = function(req, res) {
     commentModel.find({
       travelId: req.params.travelId
