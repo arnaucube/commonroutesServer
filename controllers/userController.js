@@ -319,7 +319,7 @@ exports.getNotifications = function(req, res) {
 };
 
 function postImage(req, res, filename, fileImg) {
-    url = "http://127.0.0.1:3050/image";
+    url = "http://127.0.0.1:3001/image";
     var importFile = function(fileImg) {
         var decodedFile = new Buffer(fileImg, 'base64');
         var r = request.post(url, function(err, httpResponse, body) {

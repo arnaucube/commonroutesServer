@@ -47,13 +47,12 @@ code: https://github.com/arnaucode/commonroutesApp
 ```
 
 ### Configuration before run:
-In the file adminConfig.js, put the sha256 of the password that allows to create new admins:
-```js
-module.exports = {
-    'passwordHash': 'Bzij4hEeEUpmXTWyS+X0LR+YcA8WFjP2P7qhW0sxA6s='/*password raw: adminPassword*/
-};
+In controllers/userController.js, define the port of the goImgServer:
 ```
-
+function postImage(req, res, filename, fileImg) {
+    url = "http://127.0.0.1:3001/image";
+    [...]
+```
 
 #### RESOURCES using:
 
