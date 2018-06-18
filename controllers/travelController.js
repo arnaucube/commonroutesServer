@@ -82,19 +82,27 @@ exports.updateTravel = function(req, res) {
 	userModel.findOne({'token': req.headers['x-access-token']})
 	.exec(function(err, user){
         if (err) return res.send(500, err.message);
-        console.log(travel);
-        travelModel.findOne({_id: travel._id})
-        .lean()
-        .populate('travels', 'title from to date')
-        .exec(function (err, travel) {
-            if (err) return res.send(500, err.message);
-            if (!travel) {
-                res.json({success: false, message: 'travel not found.'});
-            } else if (travel) {
+				// search if the travel exist for that user
+				travelModel.findOne({_id: req.body._id, user: user._id})
+				.exec(function(err, travel){
+					if (!travel) {
+							res.send(500, 'travel not found.');
+					} else if (travel) {
+						// now update travel
+						travelModel.update({
+							_id: req.body._id, user: user._id
+						}, req.body,
+						function(err, travel) {
+							if (err) {
+								res.send(500, 'travel not found.');
+							}
+							console.log(travel);
+							res.status(200).jsonp(travel);
+						});
+					}
+				});
 
-                res.status(200).jsonp(travel);
-            }
-        });
+
     });
 };
 
