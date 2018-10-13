@@ -1,3 +1,5 @@
+var request = require('request');
+
 var config = require('../config');
 var pageSize=config.pageSize;
 
@@ -65,6 +67,20 @@ exports.addTravel = function(req, res) {
 
 			travel.save(function(err, travel) {
 				if(err) return res.send(500, err.message);
+
+				// send travel to telegram bot
+				request({
+				  uri: 'http://127.0.0.1:3003/api/travel',
+				  method: 'POST',
+				  json: travel
+				}, function (error, response, body) {
+				  if (!error && response.statusCode == 200) {
+				    // console.log(body.id) // Print the shortened url.
+				  } else if (error){
+						console.log("error sending travel to bot: " + error);
+					}
+				});
+
 
 				user.travels.push(travel._id);
 				user.save(function (err, user) {

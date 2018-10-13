@@ -194,5 +194,5 @@ app.use('/api', apiRoutes);
 
 // Start server
 app.listen(config.port, function() {
-    console.log("Node server running on http://localhost:3000");
+    console.log("Node server running on http://localhost:" + config.port);
 });
