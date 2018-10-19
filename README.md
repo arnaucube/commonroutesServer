@@ -55,6 +55,25 @@ function postImage(req, res, filename, fileImg) {
     [...]
 ```
 
+### Launch using Tmux
+First move the `launch-all.sh` to the parent directory.
+Having the following directory scheme:
+```
+./
+  commonRoutesBot/
+  commonRoutesLandingPage/
+  commonRoutesServer/
+  goImgServer/
+  launch-all.sh
+```
+
+Make sure to have `tmux` installed, and mongodb running, and the `npm` packages of the different directories installed.
+
+Then just need to run:
+```
+bash launch-all.sh
+```
+
 #### RESOURCES using:
 
 initial avatars users: [http://www.flaticon.com/packs/animal-icon-collection](http://www.flaticon.com/packs/animal-icon-collection)
